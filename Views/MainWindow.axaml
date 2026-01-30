@@ -1,20 +1,48 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:TyperPro.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="clr-namespace:TyperPro.ViewModels"
         x:Class="TyperPro.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="TyperPro">
+        Width="900"
+        Height="550"
+        Title="TyperPro – Cybrella 2026">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <StackPanel Margin="32" Spacing="16">
 
+        <TextBlock Text="TyperPro"
+                   FontSize="28"
+                   FontWeight="Bold"/>
+
+        <Border Padding="16"
+                CornerRadius="8"
+                BorderThickness="1">
+            <TextBlock Text="{Binding TargetText}"
+                       FontSize="18"
+                       TextWrapping="Wrap"/>
+        </Border>
+
+        <TextBox Text="{Binding InputText}"
+                 FontSize="18"
+                 Watermark="Start typing here…"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="24">
+            <TextBlock Text="{Binding Wpm, StringFormat='WPM: {0}'}"
+                       FontSize="16"/>
+
+            <TextBlock Text="{Binding Accuracy, StringFormat='Accuracy: {0}%'}"
+                       FontSize="16"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <Button Content="Start"
+                    Command="{Binding StartCommand}"/>
+
+            <Button Content="Reset"
+                    Command="{Binding ResetCommand}"/>
+        </StackPanel>
+
+    </StackPanel>
 </Window>
