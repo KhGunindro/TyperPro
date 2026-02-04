@@ -1,10 +1,57 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:fluent="clr-namespace:Avalonia.Themes.Fluent;assembly=Avalonia.Themes.Fluent"
-             x:Class="TyperPro.App">
+             x:Class="TyperPro.App"
+             RequestedThemeVariant="Dark">
 
     <Application.Styles>
-        <fluent:FluentTheme />
-    </Application.Styles>
+        <FluentTheme />
 
+        <!-- Base text -->
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="JetBrains Mono"/>
+            <Setter Property="Foreground" Value="#E0E0E0"/>
+        </Style>
+
+        <!-- ================= CHARACTER BASE ================= -->
+        <Style Selector="TextBlock.char">
+            <Setter Property="Opacity" Value="0.55"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.6"/>
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="1" ScaleY="1"/>
+            </Setter>
+
+            <!-- ONLY animate safe properties -->
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.12"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <!-- ================= CORRECT CHAR ================= -->
+        <Style Selector="TextBlock.char[Foreground=#32CD32]">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="1.12" ScaleY="1.12"/>
+            </Setter>
+        </Style>
+
+        <!-- ================= WRONG CHAR ================= -->
+        <Style Selector="TextBlock.char[Foreground=#CD5C5C]">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+            </Setter>
+        </Style>
+
+        <!-- ================= CARET ================= -->
+        <Style Selector="TextBlock.char[Foreground=#90EE90]">
+            <Setter Property="Opacity" Value="1"/>
+            <Setter Property="RenderTransform">
+                <ScaleTransform ScaleX="1.18" ScaleY="1.18"/>
+            </Setter>
+        </Style>
+
+    </Application.Styles>
 </Application>

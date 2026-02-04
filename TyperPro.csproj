@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AvaloniaResource Include="Assets/**" />    
     <PackageReference Include="Avalonia" Version="11.3.2" />
     <PackageReference Include="Avalonia.Desktop" Version="11.3.2" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.2" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
+    <PackageReference Include="OpenTK" Version="4.9.4" />
   </ItemGroup>
 
 </Project>

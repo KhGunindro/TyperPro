@@ -2,47 +2,84 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:TyperPro.ViewModels"
         x:Class="TyperPro.Views.MainWindow"
-        Width="900"
-        Height="550"
-        Title="TyperPro – Cybrella 2026">
+        Width="960"
+        Height="560"
+        Background="#121212"
+        Title="TyperPro">
 
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
 
-    <StackPanel Margin="32" Spacing="16">
+    <Grid Margin="40" RowDefinitions="Auto,*,Auto">
 
+        <!-- Header -->
         <TextBlock Text="TyperPro"
-                   FontSize="28"
-                   FontWeight="Bold"/>
+                   FontSize="32"
+                   FontWeight="Bold"
+                   Foreground="#4CAF50"/>
 
-        <Border Padding="16"
-                CornerRadius="8"
-                BorderThickness="1">
-            <TextBlock Text="{Binding TargetText}"
-                       FontSize="18"
-                       TextWrapping="Wrap"/>
+        <!-- Main card -->
+        <Border Grid.Row="1"
+                Margin="0,28"
+                Padding="28"
+                CornerRadius="20"
+                Background="#181818"
+                BorderBrush="#2E7D32"
+                BorderThickness="1"
+                BoxShadow="0 20 40 #00000066">
+
+            <StackPanel Spacing="24">
+
+                <!-- Animated sentence -->
+                <ItemsControl ItemsSource="{Binding FormattedText}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Character}"
+                                       FontSize="21"
+                                       Foreground="{Binding Foreground}"
+                                       Classes="char"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Input -->
+                <TextBox Text="{Binding InputText}"
+                         FontSize="22"
+                         CaretBrush="#4CAF50"
+                         Background="#141414"
+                         BorderBrush="#2E7D32"
+                         CornerRadius="14"
+                         Padding="16"
+                         Watermark="start typing…"/>
+
+                <!-- Stats -->
+                <StackPanel Orientation="Horizontal" Spacing="32">
+                    <TextBlock Text="{Binding Wpm, StringFormat='WPM {0}'}"
+                               Foreground="#81C784"/>
+                    <TextBlock Text="{Binding Accuracy, StringFormat='ACC {0}%'}"
+                               Foreground="#81C784"/>
+                    <TextBlock Text="{Binding RemainingSeconds, StringFormat='TIME {0}s'}"
+                               Foreground="#81C784"/>
+                </StackPanel>
+
+            </StackPanel>
         </Border>
 
-        <TextBox Text="{Binding InputText}"
-                 FontSize="18"
-                 Watermark="Start typing here…"/>
-
-        <StackPanel Orientation="Horizontal" Spacing="24">
-            <TextBlock Text="{Binding Wpm, StringFormat='WPM: {0}'}"
-                       FontSize="16"/>
-
-            <TextBlock Text="{Binding Accuracy, StringFormat='Accuracy: {0}%'}"
-                       FontSize="16"/>
+        <!-- Controls -->
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Spacing="16">
+            <Button Content="Start" Command="{Binding StartCommand}"/>
+            <Button Content="Reset" Command="{Binding ResetCommand}"/>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal" Spacing="12">
-            <Button Content="Start"
-                    Command="{Binding StartCommand}"/>
-
-            <Button Content="Reset"
-                    Command="{Binding ResetCommand}"/>
-        </StackPanel>
-
-    </StackPanel>
+    </Grid>
 </Window>
