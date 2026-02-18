@@ -21,7 +21,7 @@ public sealed class TypingSoundService : IDisposable
         if (_device == ALDevice.Null)
             throw new Exception("Failed to open OpenAL device");
 
-        _context = ALC.CreateContext(_device, (int[])null);
+        _context = ALC.CreateContext(_device, (int[])null!);
         ALC.MakeContextCurrent(_context);
 
         _buffer = AL.GenBuffer();

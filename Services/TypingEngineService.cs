@@ -7,7 +7,7 @@ public class TypingEngineService
     private readonly Stopwatch _stopwatch = new();
     private string _targetText = string.Empty;
 
-    public const int TestDurationSeconds = 60;
+    public const int TestDurationSeconds = 30;   // Changed to 30 seconds
 
     public bool IsRunning => _stopwatch.IsRunning;
 
