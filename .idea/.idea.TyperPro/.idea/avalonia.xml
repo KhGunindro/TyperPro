@@ -5,6 +5,7 @@
       <map>
         <entry key="App.axaml" value="TyperPro.csproj" />
         <entry key="Views/MainWindow.axaml" value="TyperPro.csproj" />
+        <entry key="Views/ResultDialog.axaml" value="TyperPro.csproj" />
       </map>
     </option>
   </component>

@@ -6,15 +6,59 @@
         Height="560"
         FontFamily="{StaticResource JetBrainsFont}"
         Background="#121212"
-        Title="TyperPro">
+        Title="TyperPro"
+        Focusable="True"
+        KeyDown="OnKeyDown">
 
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
 
+    <Window.Styles>
+        <!-- Blinking cursor animation -->
+        <Style Selector="Border.cursor">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Width" Value="2"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Margin" Value="0 4 0 0"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Style.Animations>
+                <Animation Duration="0:0:1" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Green‑themed buttons (non‑focusable) -->
+        <Style Selector="Button">
+            <Setter Property="Background" Value="#2E7D32"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="20 10"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Style Selector="^:pointerover">
+                <Setter Property="Background" Value="#4CAF50"/>
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="#1B5E20"/>
+            </Style>
+        </Style>
+    </Window.Styles>
+
     <Grid Margin="40" RowDefinitions="Auto,*,Auto">
 
-        <!-- Header -->
+        <!-- Header – JetBrains font -->
         <TextBlock Text="TyperPro"
                    FontSize="32"
                    FontWeight="Bold"
@@ -33,7 +77,7 @@
 
             <StackPanel Spacing="24">
 
-                <!-- Animated sentence -->
+                <!-- Sentence with cursor – WrapPanel for word wrap -->
                 <ItemsControl ItemsSource="{Binding FormattedText}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -43,45 +87,35 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Character}"
-                                       FontSize="21"
-                                       Foreground="{Binding Foreground}"
-                                       FontFamily="{StaticResource JetBrainsFont}"
-                                       Classes="char"/>
+                            <Grid>
+                                <TextBlock Text="{Binding Character}"
+                                           FontSize="21"
+                                           Foreground="{Binding Foreground}"
+                                           FontFamily="{StaticResource JetBrainsFont}"
+                                           Margin="0 0 1 0"/>
+                                <!-- Cursor (only shown for current character) -->
+                                <Border Classes.cursor="{Binding IsCaret}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Bottom"/>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <!-- Input -->
-                <TextBox Text="{Binding InputText}"
-                         FontSize="22"
-                         CaretBrush="#4CAF50"
-                         Background="#141414"
-                         BorderBrush="#2E7D32"
-                         CornerRadius="14"
-                         Padding="16"
-                         FontFamily="{StaticResource JetBrainsFont}"
-                         Watermark="start typing…"/>
-
                 <!-- Stats -->
-                <StackPanel Orientation="Horizontal" Spacing="32">
-                    <TextBlock Text="{Binding Wpm, StringFormat='WPM {0}'}"
-                               FontFamily="{StaticResource JetBrainsFont}"
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="32">
+                    <TextBlock Text="{Binding Wpm, StringFormat='WPM {0:F0}'}"
                                Foreground="#81C784"/>
-                    
-                    <TextBlock Text="{Binding Accuracy, StringFormat='ACC {0}%'}"
-                               FontFamily="{StaticResource JetBrainsFont}"
+                    <TextBlock Text="{Binding Accuracy, StringFormat='ACC {0:F0}%'}"
                                Foreground="#81C784"/>
-                    
                     <TextBlock Text="{Binding RemainingSeconds, StringFormat='TIME {0}s'}"
-                               FontFamily="{StaticResource JetBrainsFont}"
                                Foreground="#81C784"/>
                 </StackPanel>
 
             </StackPanel>
         </Border>
 
-        <!-- Controls -->
+        <!-- Control buttons -->
         <StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Center"
