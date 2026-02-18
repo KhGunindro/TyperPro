@@ -54,4 +54,7 @@
         </Style>
 
     </Application.Styles>
+    <Application.Resources>
+        <FontFamily x:Key="JetBrainsFont">avares://TyperPro/Assets/Fonts#JetBrains</FontFamily>
+    </Application.Resources>
 </Application>
