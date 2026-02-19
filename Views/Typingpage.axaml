@@ -1,0 +1,232 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TyperPro.Views.TypingPage"
+             Background="#0D0D0D"
+             FontFamily="Courier New, Courier, monospace">
+
+    <UserControl.Styles>
+
+        <!-- Blinking caret -->
+        <Style Selector="Border.cursor">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Width" Value="2"/>
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="Margin" Value="0 0 0 0"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Style.Animations>
+                <Animation Duration="0:0:0.9" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">  <Setter Property="Opacity" Value="1"/></KeyFrame>
+                    <KeyFrame Cue="45%"> <Setter Property="Opacity" Value="0"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Stat label -->
+        <Style Selector="TextBlock.statLabel">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="3"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+
+        <!-- Stat value -->
+        <Style Selector="TextBlock.statValue">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+
+        <!-- Primary button -->
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="#0D0D0D"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="28 11"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#66BB6A"/>
+        </Style>
+        <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1A2E1A"/>
+            <Setter Property="TextElement.Foreground" Value="#2A4A2A"/>
+        </Style>
+
+        <!-- Ghost button -->
+        <Style Selector="Button.ghost">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#444444"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="BorderBrush" Value="#1E1E1E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="28 11"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#111111"/>
+            <Setter Property="TextElement.Foreground" Value="#888888"/>
+        </Style>
+        <Style Selector="Button.ghost:disabled /template/ ContentPresenter">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="TextElement.Foreground" Value="#1E1E1E"/>
+        </Style>
+
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="48 32 48 40">
+
+        <!-- ── Header ───────────────────────────────────────────────── -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto,*" Margin="0 0 0 28">
+
+            <!-- Left: round + attempts -->
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                <TextBlock Text="TYPERPRO"
+                           FontSize="10"
+                           FontWeight="Bold"
+                           Foreground="#4CAF50"
+                           LetterSpacing="5"
+                           FontFamily="Courier New, Courier, monospace"/>
+                <TextBlock Text="{Binding RoundDisplay}"
+                           FontSize="18"
+                           FontWeight="Bold"
+                           Foreground="#E8E8E8"
+                           FontFamily="Courier New, Courier, monospace"
+                           Margin="0 4 0 0"/>
+            </StackPanel>
+
+            <!-- Centre: countdown ring / timer -->
+            <Border Grid.Column="1"
+                    Width="72" Height="72"
+                    CornerRadius="36"
+                    BorderBrush="#1A1A1A"
+                    BorderThickness="2"
+                    Background="#0D0D0D"
+                    HorizontalAlignment="Center">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock Text="{Binding RemainingSeconds}"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="#E8E8E8"
+                               HorizontalAlignment="Center"
+                               FontFamily="Courier New, Courier, monospace"/>
+                    <TextBlock Text="SEC"
+                               FontSize="8"
+                               Foreground="#333333"
+                               HorizontalAlignment="Center"
+                               LetterSpacing="2"
+                               FontFamily="Courier New, Courier, monospace"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Right: live WPM + ACC -->
+            <StackPanel Grid.Column="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Spacing="28">
+                <StackPanel HorizontalAlignment="Right">
+                    <TextBlock Classes="statLabel" Text="WPM" HorizontalAlignment="Right"/>
+                    <TextBlock Classes="statValue" Text="{Binding Wpm, StringFormat='{}{0:F0}'}"/>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right">
+                    <TextBlock Classes="statLabel" Text="ACC" HorizontalAlignment="Right"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Classes="statValue" Text="{Binding Accuracy, StringFormat='{}{0:F0}'}"/>
+                        <TextBlock FontSize="12" Foreground="#333333" VerticalAlignment="Bottom"
+                                   Margin="2 0 0 4" FontFamily="Courier New">%</TextBlock>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Right">
+                    <TextBlock Classes="statLabel" Text="RESETS" HorizontalAlignment="Right"/>
+                    <TextBlock Classes="statValue"
+                               Text="{Binding AttemptsLeft}"
+                               Foreground="#FF9800"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <!-- ── Typing area ──────────────────────────────────────────── -->
+        <Border Grid.Row="1"
+                Background="#0A0A0A"
+                BorderBrush="#161616"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="32 28">
+            <Grid RowDefinitions="*,Auto">
+
+                <!-- Text -->
+                <ItemsControl Grid.Row="0"
+                              ItemsSource="{Binding FormattedText}"
+                              VerticalAlignment="Top">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock Text="{Binding Character}"
+                                           FontSize="20"
+                                           FontFamily="{StaticResource JetBrainsFont}"
+                                           Foreground="{Binding Foreground}"
+                                           Margin="0 0 0.5 0"
+                                           LineHeight="34"/>
+                                <Border Classes.cursor="{Binding IsCaret}"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Bottom"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- Bottom hint -->
+                <TextBlock Grid.Row="1"
+                           Text="click here and start typing"
+                           FontSize="10"
+                           Foreground="#1E1E1E"
+                           HorizontalAlignment="Center"
+                           Margin="0 20 0 0"
+                           LetterSpacing="2"
+                           FontFamily="Courier New, Courier, monospace"/>
+            </Grid>
+        </Border>
+
+        <!-- ── Footer buttons ───────────────────────────────────────── -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0 24 0 0">
+
+            <!-- Progress dots -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+                <TextBlock Text="EASY"
+                           FontSize="9"
+                           LetterSpacing="2"
+                           Foreground="#333333"
+                           VerticalAlignment="Center"
+                           FontFamily="Courier New"/>
+                <Border Width="6" Height="6" CornerRadius="3" Background="#4CAF50"/>
+                <Border Width="6" Height="6" CornerRadius="3" Background="#1E1E1E"/>
+                <Border Width="6" Height="6" CornerRadius="3" Background="#1E1E1E"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <Button Classes="ghost"  Content="RESET" Command="{Binding ResetCommand}"/>
+                <Button Classes="primary" Content="START" Command="{Binding StartCommand}"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>

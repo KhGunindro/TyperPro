@@ -4,20 +4,7 @@ namespace TyperPro.Models;
 
 public class FormattedChar
 {
-    public char Character { get; }
-    public IBrush Foreground { get; }
-    public bool IsTyped { get; }
-    public bool IsCaret { get; }
-
-    public FormattedChar(
-        char character,
-        IBrush foreground,
-        bool isTyped,
-        bool isCaret)
-    {
-        Character = character;
-        Foreground = foreground;
-        IsTyped = isTyped;
-        IsCaret = isCaret;
-    }
+    public string Character { get; set; } = string.Empty;
+    public string Foreground { get; set; } = string.Empty;
+    public bool IsCaret { get; set; }
 }

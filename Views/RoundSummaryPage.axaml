@@ -1,0 +1,171 @@
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TyperPro.Views.RoundSummaryPage"
+             Background="#0D0D0D"
+             FontFamily="Courier New, Courier, monospace">
+
+    <UserControl.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="3"/>
+        </Style>
+        <Style Selector="TextBlock.bigValue">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+        <Style Selector="TextBlock.unit">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="#2A2A2A"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Margin" Value="3 0 0 5"/>
+        </Style>
+        <Style Selector="Border.avgCard">
+            <Setter Property="Background" Value="#111111"/>
+            <Setter Property="BorderBrush" Value="#1A1A1A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="20 14"/>
+        </Style>
+        <Style Selector="Border.subCard">
+            <Setter Property="Background" Value="#0A0A0A"/>
+            <Setter Property="BorderThickness" Value="0 0 0 2"/>
+            <Setter Property="Padding" Value="20 16"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="#0D0D0D"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="28 11"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#66BB6A"/>
+        </Style>
+        <Style Selector="Button.ghost">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#444444"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="BorderBrush" Value="#1E1E1E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="28 11"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#111111"/>
+            <Setter Property="TextElement.Foreground" Value="#888888"/>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid Margin="48 36 48 48" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Margin="0 0 0 32" x:Name="HeaderPanel" Opacity="0">
+                <StackPanel.Transitions>
+                    <Transitions>
+                        <DoubleTransition Property="Opacity" Duration="0:0:0.4" Easing="CubicEaseOut"/>
+                    </Transitions>
+                </StackPanel.Transitions>
+                <TextBlock x:Name="RoundBadge"
+                           FontSize="10" FontWeight="Bold"
+                           Foreground="#4CAF50" LetterSpacing="5"
+                           Margin="0 0 0 6"/>
+                <TextBlock x:Name="RoundTitle"
+                           FontSize="28" FontWeight="Bold"
+                           Foreground="#E8E8E8"/>
+            </StackPanel>
+
+            <!-- Average stats row -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Margin="0 0 0 12">
+                <Border Grid.Column="0" Classes="avgCard" Margin="0 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="AVG WPM"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="AvgWpmText" Classes="bigValue"/>
+                            <TextBlock Classes="unit" Text="wpm"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="1" Classes="avgCard" Margin="6 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="AVG RAW"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="AvgRawText" Classes="bigValue" Foreground="#666666"/>
+                            <TextBlock Classes="unit" Text="wpm"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="2" Classes="avgCard" Margin="6 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="AVG ACC"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="AvgAccText" Classes="bigValue"/>
+                            <TextBlock Classes="unit" Text="%"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Grid.Column="3" Classes="avgCard" Margin="6 0 0 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="BEST WPM"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="BestWpmText" Classes="bigValue" Foreground="#4CAF50"/>
+                            <TextBlock Classes="unit" Text="wpm"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- 3 sub-round cards side by side -->
+            <Grid Grid.Row="2" x:Name="SubRoundGrid" ColumnDefinitions="*,*,*" Margin="0 0 0 12"/>
+
+            <!-- WPM chart -->
+            <Border Grid.Row="3" Classes="avgCard" Margin="0 0 0 12">
+                <StackPanel>
+                    <Grid ColumnDefinitions="*,Auto" Margin="0 0 0 12">
+                        <TextBlock Classes="label" Text="WPM OVER TIME" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Width="12" Height="2" Background="#4CAF50" VerticalAlignment="Center"/>
+                                <TextBlock Text="sub 1" FontSize="9" Foreground="#333333"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Width="12" Height="2" Background="#FF9800" VerticalAlignment="Center"/>
+                                <TextBlock Text="sub 2" FontSize="9" Foreground="#333333"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Border Width="12" Height="2" Background="#2196F3" VerticalAlignment="Center"/>
+                                <TextBlock Text="sub 3" FontSize="9" Foreground="#333333"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    <Canvas x:Name="WpmChart" Height="120" Background="Transparent"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button x:Name="NextBtn" Classes="primary" Click="Next_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock x:Name="NextBtnText" Text="NEXT ROUND" VerticalAlignment="Center"/>
+                        <TextBlock Text="→" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Content="FINISH" Classes="ghost" Click="Finish_Click"/>
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,21 +1,15 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="clr-namespace:TyperPro.ViewModels"
         x:Class="TyperPro.Views.MainWindow"
         Width="960"
-        Height="560"
-        FontFamily="{StaticResource JetBrainsFont}"
+        Height="600"
         Background="#121212"
         Title="TyperPro"
         Focusable="True"
-        KeyDown="OnKeyDown">
-
-    <Window.DataContext>
-        <vm:MainViewModel />
-    </Window.DataContext>
+        Loaded="OnLoaded"
+        PointerPressed="OnPointerPressed">
 
     <Window.Styles>
-        <!-- Blinking cursor animation -->
         <Style Selector="Border.cursor">
             <Setter Property="Background" Value="#4CAF50"/>
             <Setter Property="Width" Value="2"/>
@@ -24,20 +18,12 @@
             <Setter Property="VerticalAlignment" Value="Bottom"/>
             <Style.Animations>
                 <Animation Duration="0:0:1" IterationCount="Infinite">
-                    <KeyFrame Cue="0%">
-                        <Setter Property="Opacity" Value="1"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="50%">
-                        <Setter Property="Opacity" Value="0"/>
-                    </KeyFrame>
-                    <KeyFrame Cue="100%">
-                        <Setter Property="Opacity" Value="1"/>
-                    </KeyFrame>
+                    <KeyFrame Cue="0%"><Setter Property="Opacity" Value="1"/></KeyFrame>
+                    <KeyFrame Cue="50%"><Setter Property="Opacity" Value="0"/></KeyFrame>
+                    <KeyFrame Cue="100%"><Setter Property="Opacity" Value="1"/></KeyFrame>
                 </Animation>
             </Style.Animations>
         </Style>
-
-        <!-- Green‑themed buttons (non‑focusable) -->
         <Style Selector="Button">
             <Setter Property="Background" Value="#2E7D32"/>
             <Setter Property="Foreground" Value="White"/>
@@ -47,82 +33,22 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Focusable" Value="False"/>
-            <Style Selector="^:pointerover">
-                <Setter Property="Background" Value="#4CAF50"/>
-            </Style>
-            <Style Selector="^:pressed">
-                <Setter Property="Background" Value="#1B5E20"/>
-            </Style>
+        </Style>
+        <Style Selector="Button:disabled">
+            <Setter Property="Background" Value="#1B5E20"/>
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+        <Style Selector="Border.statBox">
+            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="BorderBrush" Value="#2E7D32"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16 10"/>
+            <Setter Property="Margin" Value="6"/>
         </Style>
     </Window.Styles>
 
-    <Grid Margin="40" RowDefinitions="Auto,*,Auto">
+    <!-- Single ContentControl — code-behind swaps between TypingPage and ResultPage -->
+    <ContentControl x:Name="PageHost"/>
 
-        <!-- Header – JetBrains font -->
-        <TextBlock Text="TyperPro"
-                   FontSize="32"
-                   FontWeight="Bold"
-                   FontFamily="{StaticResource JetBrainsFont}"
-                   Foreground="#4CAF50"/>
-
-        <!-- Main card -->
-        <Border Grid.Row="1"
-                Margin="0,28"
-                Padding="28"
-                CornerRadius="20"
-                Background="#181818"
-                BorderBrush="#2E7D32"
-                BorderThickness="1"
-                BoxShadow="0 20 40 #00000066">
-
-            <StackPanel Spacing="24">
-
-                <!-- Sentence with cursor – WrapPanel for word wrap -->
-                <ItemsControl ItemsSource="{Binding FormattedText}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <TextBlock Text="{Binding Character}"
-                                           FontSize="21"
-                                           Foreground="{Binding Foreground}"
-                                           FontFamily="{StaticResource JetBrainsFont}"
-                                           Margin="0 0 1 0"/>
-                                <!-- Cursor (only shown for current character) -->
-                                <Border Classes.cursor="{Binding IsCaret}"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Bottom"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-
-                <!-- Stats -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="32">
-                    <TextBlock Text="{Binding Wpm, StringFormat='WPM {0:F0}'}"
-                               Foreground="#81C784"/>
-                    <TextBlock Text="{Binding Accuracy, StringFormat='ACC {0:F0}%'}"
-                               Foreground="#81C784"/>
-                    <TextBlock Text="{Binding RemainingSeconds, StringFormat='TIME {0}s'}"
-                               Foreground="#81C784"/>
-                </StackPanel>
-
-            </StackPanel>
-        </Border>
-
-        <!-- Control buttons -->
-        <StackPanel Grid.Row="2"
-                    Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    Spacing="16">
-            <Button Content="Start" Command="{Binding StartCommand}"/>
-            <Button Content="Reset" Command="{Binding ResetCommand}"/>
-        </StackPanel>
-
-    </Grid>
 </Window>

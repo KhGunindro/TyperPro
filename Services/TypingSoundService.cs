@@ -11,7 +11,6 @@ public sealed class TypingSoundService : IDisposable
     private readonly ALContext _context;
     private readonly int _buffer;
     private readonly int _source;
-
     private DateTime _lastPlayed = DateTime.MinValue;
     private const int MinIntervalMs = 25;
 
@@ -22,6 +21,9 @@ public sealed class TypingSoundService : IDisposable
             throw new Exception("Failed to open OpenAL device");
 
         _context = ALC.CreateContext(_device, (int[])null!);
+        if (_context == ALContext.Null)
+            throw new Exception("Failed to create OpenAL context");
+
         ALC.MakeContextCurrent(_context);
 
         _buffer = AL.GenBuffer();
@@ -33,22 +35,67 @@ public sealed class TypingSoundService : IDisposable
     private void LoadWavFromAssets(string uri)
     {
         using var stream = AssetLoader.Open(new Uri(uri));
-        using var ms = new MemoryStream();
-        stream.CopyTo(ms);
+        using var reader = new BinaryReader(stream);
 
-        var wav = ms.ToArray();
+        // RIFF header
+        var riff = new string(reader.ReadChars(4));
+        if (riff != "RIFF")
+            throw new Exception("Not a valid WAV file (missing RIFF header)");
 
-        // Skip WAV header (44 bytes)
-        var audioData = new byte[wav.Length - 44];
-        Array.Copy(wav, 44, audioData, 0, audioData.Length);
+        reader.ReadInt32();                          // file size (unused)
 
-        AL.BufferData(
-            _buffer,
-            ALFormat.Mono16,
-            audioData,
-            44100
-        );
+        var wave = new string(reader.ReadChars(4));
+        if (wave != "WAVE")
+            throw new Exception("Not a valid WAV file (missing WAVE marker)");
 
+        // Walk chunks until we find "fmt " and "data"
+        int sampleRate    = 44100;
+        short channels    = 1;
+        short bitsPerSample = 16;
+        byte[]? audioData = null;
+
+        while (stream.Position < stream.Length - 8)
+        {
+            var chunkId   = new string(reader.ReadChars(4));
+            int chunkSize = reader.ReadInt32();
+
+            switch (chunkId)
+            {
+                case "fmt ":
+                    reader.ReadInt16();              // audio format (1 = PCM)
+                    channels       = reader.ReadInt16();
+                    sampleRate     = reader.ReadInt32();
+                    reader.ReadInt32();              // byte rate
+                    reader.ReadInt16();              // block align
+                    bitsPerSample  = reader.ReadInt16();
+                    if (chunkSize > 16)
+                        reader.ReadBytes(chunkSize - 16); // skip extension bytes
+                    break;
+
+                case "data":
+                    audioData = reader.ReadBytes(chunkSize);
+                    break;
+
+                default:
+                    // Skip unknown chunks (e.g. "LIST", "INFO", "id3 ", etc.)
+                    reader.ReadBytes(chunkSize);
+                    break;
+            }
+
+            if (audioData != null) break;
+        }
+
+        if (audioData == null)
+            throw new Exception("WAV file contained no data chunk");
+
+        var format = channels switch
+        {
+            1 => bitsPerSample == 8 ? ALFormat.Mono8   : ALFormat.Mono16,
+            2 => bitsPerSample == 8 ? ALFormat.Stereo8 : ALFormat.Stereo16,
+            _ => throw new Exception($"Unsupported channel count: {channels}")
+        };
+
+        AL.BufferData(_buffer, format, audioData, sampleRate);
         AL.Source(_source, ALSourcei.Buffer, _buffer);
         AL.Source(_source, ALSourcef.Gain, 0.25f);
     }
@@ -60,7 +107,6 @@ public sealed class TypingSoundService : IDisposable
             return;
 
         _lastPlayed = now;
-
         AL.SourceStop(_source);
         AL.SourcePlay(_source);
     }
@@ -69,7 +115,6 @@ public sealed class TypingSoundService : IDisposable
     {
         AL.DeleteSource(_source);
         AL.DeleteBuffer(_buffer);
-
         ALC.MakeContextCurrent(ALContext.Null);
         ALC.DestroyContext(_context);
         ALC.CloseDevice(_device);
