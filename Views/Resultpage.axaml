@@ -1,0 +1,241 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:views="clr-namespace:TyperPro.Views"
+             x:Class="TyperPro.Views.ResultPage"
+             Background="#0D0D0D"
+             FontFamily="Courier New, Courier, monospace">
+
+    <UserControl.Styles>
+        <Style Selector="Border.card">
+            <Setter Property="Background" Value="#111111"/>
+            <Setter Property="BorderBrush" Value="#1E1E1E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="20 16"/>
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Foreground" Value="#444444"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="3"/>
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#E8E8E8"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+        <Style Selector="TextBlock.unit">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="Margin" Value="4 0 0 6"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+        <Style Selector="TextBlock.charStat">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+        </Style>
+        <Style Selector="Border.charCard">
+            <Setter Property="Background" Value="#0A0A0A"/>
+            <Setter Property="BorderThickness" Value="0 0 0 2"/>
+            <Setter Property="Padding" Value="16 12"/>
+            <Setter Property="Margin" Value="0 0 8 0"/>
+        </Style>
+        <Style Selector="Button.action">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderBrush" Value="#222222"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="24 10"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.action:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1A1A1A"/>
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="#0D0D0D"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="24 10"/>
+            <Setter Property="CornerRadius" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#66BB6A"/>
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="48 36 48 48" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+
+            <!-- Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0 0 0 32">
+                <StackPanel Grid.Column="0">
+                    <TextBlock x:Name="RoundBadge"
+                               FontSize="10"
+                               FontWeight="Bold"
+                               Foreground="#4CAF50"
+                               LetterSpacing="4"
+                               Margin="0 0 0 6"
+                               FontFamily="Courier New, Courier, monospace"/>
+                    <TextBlock x:Name="RoundNameText"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#E8E8E8"
+                               FontFamily="Courier New, Courier, monospace"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <TextBlock x:Name="AttemptsText"
+                               FontSize="11"
+                               Foreground="#333333"
+                               HorizontalAlignment="Right"
+                               FontFamily="Courier New, Courier, monospace"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- Primary stats row -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*,*,*" Margin="0 0 0 12">
+                <!-- WPM -->
+                <Border Grid.Column="0" Classes="card" Margin="0 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="WPM"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="WpmText" Classes="value"/>
+                            <TextBlock Classes="unit" Text="wpm"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!-- RAW -->
+                <Border Grid.Column="1" Classes="card" Margin="6 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="RAW"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="RawText" Classes="value" Foreground="#888888"/>
+                            <TextBlock Classes="unit" Text="wpm"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!-- ACC -->
+                <Border Grid.Column="2" Classes="card" Margin="6 0 6 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="ACC"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="AccText" Classes="value"/>
+                            <TextBlock Classes="unit" Text="%"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <!-- CONSISTENCY -->
+                <Border Grid.Column="3" Classes="card" Margin="6 0 0 0">
+                    <StackPanel>
+                        <TextBlock Classes="label" Text="CONSISTENCY"/>
+                        <StackPanel Orientation="Horizontal" Margin="0 4 0 0">
+                            <TextBlock x:Name="ConsText" Classes="value" Foreground="#888888"/>
+                            <TextBlock Classes="unit" Text="%"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Charts row -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,*" Margin="0 0 0 12">
+                <!-- WPM chart -->
+                <Border Grid.Column="0" Classes="card" Margin="0 0 6 0">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0 0 0 12">
+                            <TextBlock Classes="label" Text="WPM OVER TIME" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="16">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Width="12" Height="2" Background="#4CAF50" VerticalAlignment="Center"/>
+                                    <TextBlock Text="wpm" FontSize="9" Foreground="#444444" FontFamily="Courier New"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <Border Width="12" Height="2" Background="#333333" VerticalAlignment="Center"/>
+                                    <TextBlock Text="raw" FontSize="9" Foreground="#444444" FontFamily="Courier New"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                        <Canvas x:Name="WpmChart" Height="120" Background="Transparent"/>
+                    </StackPanel>
+                </Border>
+                <!-- Error chart -->
+                <Border Grid.Column="1" Classes="card" Margin="6 0 0 0">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0 0 0 12">
+                            <TextBlock Classes="label" Text="ERROR RATE" VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                <Border Width="12" Height="2" Background="#F44336" VerticalAlignment="Center"/>
+                                <TextBlock Text="errors %" FontSize="9" Foreground="#444444" FontFamily="Courier New"/>
+                            </StackPanel>
+                        </Grid>
+                        <Canvas x:Name="ErrorChart" Height="120" Background="Transparent"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Character breakdown -->
+            <Border Grid.Row="3" Classes="card" Margin="0 0 0 12">
+                <StackPanel>
+                    <TextBlock Classes="label" Text="CHARACTER BREAKDOWN" Margin="0 0 0 16"/>
+                    <Grid ColumnDefinitions="*,*,*,*,*">
+                        <Border Grid.Column="0" Classes="charCard" BorderBrush="#4CAF50">
+                            <StackPanel>
+                                <TextBlock Classes="label" Text="CORRECT"/>
+                                <TextBlock x:Name="CorrectText" Classes="charStat" Foreground="#4CAF50" Margin="0 6 0 0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="1" Classes="charCard" BorderBrush="#F44336">
+                            <StackPanel>
+                                <TextBlock Classes="label" Text="INCORRECT"/>
+                                <TextBlock x:Name="IncorrectText" Classes="charStat" Foreground="#F44336" Margin="0 6 0 0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="charCard" BorderBrush="#FF9800">
+                            <StackPanel>
+                                <TextBlock Classes="label" Text="MISSED"/>
+                                <TextBlock x:Name="MissedText" Classes="charStat" Foreground="#FF9800" Margin="0 6 0 0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="3" Classes="charCard" BorderBrush="#FF9800">
+                            <StackPanel>
+                                <TextBlock Classes="label" Text="EXTRA"/>
+                                <TextBlock x:Name="ExtraText" Classes="charStat" Foreground="#FF9800" Margin="0 6 0 0"/>
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="4" Classes="charCard" BorderBrush="#333333" Margin="0">
+                            <StackPanel>
+                                <TextBlock Classes="label" Text="ATTEMPTS"/>
+                                <TextBlock x:Name="AttemptsCountText" Classes="charStat" Foreground="#666666" Margin="0 6 0 0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <!-- Bar chart of chars -->
+                    <Canvas x:Name="CharBar" Height="6" Margin="0 16 0 0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Buttons -->
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+                <Button x:Name="NextRoundBtn" Classes="primary" Click="NextRound_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="NEXT ROUND" VerticalAlignment="Center"/>
+                        <TextBlock Text="→" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button Content="FINISH" Classes="action" Click="Close_Click"/>
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+</UserControl>

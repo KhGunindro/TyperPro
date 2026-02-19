@@ -3,13 +3,43 @@
              x:Class="TyperPro.App"
              RequestedThemeVariant="Dark">
 
+    <!-- ================= RESOURCES ================= -->
+    <Application.Resources>
+        <!-- Unified JetBrains Mono font -->
+        <FontFamily x:Key="JetBrainsFont">
+            avares://TyperPro/Assets/Fonts#JetBrains
+        </FontFamily>
+    </Application.Resources>
+
+    <!-- ================= STYLES ================= -->
     <Application.Styles>
+
+        <!-- Fluent Theme -->
         <FluentTheme />
 
-        <!-- Base text -->
+        <!-- ================= GLOBAL TEXT ================= -->
         <Style Selector="TextBlock">
-            <Setter Property="FontFamily" Value="JetBrains Mono"/>
+            <Setter Property="FontFamily" Value="{StaticResource JetBrainsFont}" />
             <Setter Property="Foreground" Value="#E0E0E0"/>
+        </Style>
+
+        <!-- ================= BUTTON ================= -->
+        <Style Selector="Button">
+            <Setter Property="FontFamily" Value="{StaticResource JetBrainsFont}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#2E7D32" />
+        </Style>
+
+        <!-- ================= TEXTBOX ================= -->
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource JetBrainsFont}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="#181818" />
+        </Style>
+
+        <!-- ================= DATAGRID ================= -->
+        <Style Selector="DataGrid">
+            <Setter Property="FontFamily" Value="{StaticResource JetBrainsFont}" />
         </Style>
 
         <!-- ================= CHARACTER BASE ================= -->
@@ -20,7 +50,7 @@
                 <ScaleTransform ScaleX="1" ScaleY="1"/>
             </Setter>
 
-            <!-- ONLY animate safe properties -->
+            <!-- Safe animation -->
             <Setter Property="Transitions">
                 <Transitions>
                     <DoubleTransition Property="Opacity"
@@ -54,7 +84,4 @@
         </Style>
 
     </Application.Styles>
-    <Application.Resources>
-        <FontFamily x:Key="JetBrainsFont">avares://TyperPro/Assets/Fonts#JetBrains</FontFamily>
-    </Application.Resources>
 </Application>
