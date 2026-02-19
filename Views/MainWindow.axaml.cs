@@ -33,7 +33,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private List<Point> _wpmPoints    = new();
     private List<Point> _rawWpmPoints = new();
     private List<Point> _errorPoints  = new();
+
     private DispatcherTimer? _roundTimer;
+    private DispatcherTimer? _countdownTimer;
 
     private readonly TypingPage       _typingPage;
     private readonly ResultPage       _resultPage;
@@ -42,17 +44,21 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public IRelayCommand StartCommand { get; }
     public IRelayCommand ResetCommand { get; }
 
-    private string _roundDisplay = string.Empty;
+    // ── Backing fields ───────────────────────────────────────────────────────
+    private string _roundDisplay     = string.Empty;
     private int    _attemptsLeft;
     private double _wpm;
     private double _accuracy;
     private int    _remainingSeconds;
+    private bool   _isCountingDown;
+    private int    _countdownValue;
     private ObservableCollection<FormattedChar> _formattedText = new();
 
     public new event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged([CallerMemberName] string? n = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
 
+    // ── Paragraphs ───────────────────────────────────────────────────────────
     private static readonly string[][] Paragraphs =
     {
         new[] {
@@ -72,6 +78,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         }
     };
 
+    // ── Constructor ──────────────────────────────────────────────────────────
     public MainWindow(string playerName)
     {
         _playerName   = playerName;
@@ -84,24 +91,25 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             _soundService = null;
         }
 
-        StartCommand = new RelayCommand(StartSubRound, () => !_typingEngine.IsRunning);
+        StartCommand = new RelayCommand(StartSubRound, () => !_typingEngine.IsRunning && !_isCountingDown);
         ResetCommand = new RelayCommand(ResetSubRound, () => _typingEngine.IsRunning && _attemptsUsed < MaxAttemptsPerSubRound);
 
         InitializeComponent();
 
-        _typingPage = new TypingPage();
+        _typingPage             = new TypingPage();
         _typingPage.DataContext = this;
 
-        _resultPage = new ResultPage();
+        _resultPage              = new ResultPage();
         _resultPage.OnNextRound += GoToNextSubRound;
         _resultPage.OnClose     += ForceFinish;
 
-        _roundSummaryPage = new RoundSummaryPage();
+        _roundSummaryPage              = new RoundSummaryPage();
         _roundSummaryPage.OnNextRound += GoToNextRound;
         _roundSummaryPage.OnFinish    += GoToSummary;
 
         PageHost.Content = _typingPage;
 
+        // TextInput handles ALL printable chars; KeyDown only for Backspace
         this.AddHandler(InputElement.TextInputEvent, OnWindowTextInput, RoutingStrategies.Tunnel);
         this.AddHandler(InputElement.KeyDownEvent,   OnWindowKeyDown,   RoutingStrategies.Tunnel);
 
@@ -109,88 +117,163 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         LoadSubRound();
     }
 
-    private void OnLoaded(object? sender, RoutedEventArgs e) => this.Focus();
+    // ── Window events ────────────────────────────────────────────────────────
+    private void OnLoaded(object? sender, RoutedEventArgs e)                 => this.Focus();
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e) => this.Focus();
 
+    // ── Input handlers ───────────────────────────────────────────────────────
+
+    /// All printable characters (letters, digits, space, hyphen, underscore,
+    /// punctuation, etc.) arrive here correctly regardless of keyboard layout.
     private void OnWindowTextInput(object? sender, TextInputEventArgs e)
     {
         if (PageHost.Content != _typingPage) return;
-        if (!_typingEngine.IsRunning) return;
-        if (string.IsNullOrEmpty(e.Text)) return;
-        HandleCharacter(e.Text);
+        if (!_typingEngine.IsRunning)        return;
+        if (string.IsNullOrEmpty(e.Text))    return;
+
+        foreach (char c in e.Text)
+            HandleCharacter(c.ToString());
+
         e.Handled = true;
     }
 
+    /// Only non-printable keys that never appear in TextInput need handling here.
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
         if (PageHost.Content != _typingPage) return;
-        if (!_typingEngine.IsRunning) return;
-        if (e.Key == Key.Back)       { HandleBackspace();    e.Handled = true; }
-        else if (e.Key == Key.Space) { HandleCharacter(" "); e.Handled = true; }
+        if (!_typingEngine.IsRunning)        return;
+
+        if (e.Key == Key.Back)
+        {
+            HandleBackspace();
+            e.Handled = true;
+        }
+        // NOTE: Do NOT add Key.Space — it double-fires on some layouts.
+        //       Space arrives correctly through TextInputEvent.
     }
 
+    // ── Round loading ────────────────────────────────────────────────────────
     private void LoadSubRound()
     {
+        _countdownTimer?.Stop();
+        _countdownTimer = null;
         _roundTimer?.Stop();
-        _roundTimer   = null;
-        _attemptsUsed = 0;
+        _roundTimer     = null;
+        _isCountingDown = false;
+        _attemptsUsed   = 0;
+
         _typingEngine.ResetTimer();
 
         RoundDisplay     = $"{RoundName(_roundIndex)}  ·  {_subRoundIndex + 1} / 3";
         AttemptsLeft     = MaxAttemptsPerSubRound;
+        CountdownValue   = 5;
+        RemainingSeconds = TypingEngineService.TestDurationSeconds; // 60
 
         _typingEngine.SetTargetText(Paragraphs[_roundIndex][_subRoundIndex]);
-        CurrentInput     = string.Empty;
-        RemainingSeconds = TypingEngineService.TestDurationSeconds;
+        CurrentInput = string.Empty;
+
         _wpmPoints.Clear();
         _rawWpmPoints.Clear();
         _errorPoints.Clear();
+
         _typingEngine.Stop();
+
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
+        NotifyCountdownProperties();
 
         PageHost.Content = _typingPage;
         this.Focus();
     }
 
+    // ── Start with 5-second countdown ────────────────────────────────────────
     private void StartSubRound()
     {
-        if (_typingEngine.IsRunning) return;
-        _roundTimer?.Stop();
-        _typingEngine.Start();
-        _roundTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
-        _roundTimer.Tick += (_, _) => UpdateStats();
-        _roundTimer.Start();
+        if (_typingEngine.IsRunning || _isCountingDown) return;
+
+        _isCountingDown  = true;
+        _countdownValue  = 5;
+        RemainingSeconds = 5;
+        NotifyCountdownProperties();
+
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
+
+        // Play the first tick immediately so "5" has a sound
+        _soundService?.PlayCountdownTick();
+
+        _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _countdownTimer.Tick += (_, _) =>
+        {
+            _countdownValue--;
+            CountdownValue   = _countdownValue;
+            RemainingSeconds = _countdownValue;
+
+            if (_countdownValue <= 0)
+            {
+                _countdownTimer?.Stop();
+                _countdownTimer = null;
+                _isCountingDown = false;
+                NotifyCountdownProperties();
+
+                // "GO!" — brighter, longer tone signals round start
+                _soundService?.PlayCountdownGo();
+
+                // ── Begin the 60-second typing round ──
+                _typingEngine.Start();
+                RemainingSeconds = TypingEngineService.TestDurationSeconds; // 60
+
+                _roundTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+                _roundTimer.Tick += (_, _) => UpdateStats();
+                _roundTimer.Start();
+
+                StartCommand.NotifyCanExecuteChanged();
+                ResetCommand.NotifyCanExecuteChanged();
+                this.Focus();
+            }
+            else
+            {
+                // Short tick for 4, 3, 2, 1
+                _soundService?.PlayCountdownTick();
+            }
+        };
+        _countdownTimer.Start();
         this.Focus();
     }
 
+    // ── Reset ────────────────────────────────────────────────────────────────
     private void ResetSubRound()
     {
         if (!ResetCommand.CanExecute(null)) return;
+
         _attemptsUsed++;
         AttemptsLeft = MaxAttemptsPerSubRound - _attemptsUsed;
+
         _roundTimer?.Stop();
         _roundTimer = null;
         _typingEngine.Stop();
         _typingEngine.ResetTimer();
         _typingEngine.SetTargetText(_typingEngine.TargetText);
+
         CurrentInput = string.Empty;
         _wpmPoints.Clear();
         _rawWpmPoints.Clear();
         _errorPoints.Clear();
+
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
+
         _soundService?.Play();
         this.Focus();
     }
 
+    // ── Sub-round finished ───────────────────────────────────────────────────
     private void SubRoundFinished()
     {
         _roundTimer?.Stop();
         _roundTimer = null;
         _typingEngine.Stop();
+
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
 
@@ -224,24 +307,17 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         PageHost.Content = _resultPage;
     }
 
+    // ── Navigation ───────────────────────────────────────────────────────────
     private void GoToNextSubRound()
     {
-        if (_subRoundIndex < 2)
-        {
-            _subRoundIndex++;
-            LoadSubRound();
-        }
-        else
-        {
-            ShowRoundSummary();
-        }
+        if (_subRoundIndex < 2) { _subRoundIndex++; LoadSubRound(); }
+        else                      ShowRoundSummary();
     }
 
     private void ShowRoundSummary()
     {
         _roundSummaries.Add(_currentRoundSummary);
-        bool isLastRound = _roundIndex == 2;
-        _roundSummaryPage.SetSummary(_currentRoundSummary, isLastRound);
+        _roundSummaryPage.SetSummary(_currentRoundSummary, isLastRound: _roundIndex == 2);
         PageHost.Content = _roundSummaryPage;
     }
 
@@ -265,19 +341,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ForceFinish() => GoToSummary();
 
+    // ── Stats tick (every second during live round) ──────────────────────────
     private void UpdateStats()
     {
         if (!_typingEngine.IsRunning) return;
+
         Wpm              = _typingEngine.CalculateWpm(_currentInput);
         Accuracy         = _typingEngine.CalculateAccuracy(_currentInput);
         RemainingSeconds = _typingEngine.RemainingSeconds;
-        double elapsed   = _typingEngine.ElapsedSeconds;
+
+        double elapsed = _typingEngine.ElapsedSeconds;
         _wpmPoints.Add(new Point(elapsed, Wpm));
         _rawWpmPoints.Add(new Point(elapsed, _typingEngine.CalculateRawWpm()));
         _errorPoints.Add(new Point(elapsed, 100 - Accuracy));
+
         if (RemainingSeconds <= 0) SubRoundFinished();
     }
 
+    // ── Formatted text builder ───────────────────────────────────────────────
     private void UpdateFormattedText()
     {
         var target = _typingEngine.TargetText;
@@ -289,38 +370,102 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             string fg = "#808080";
             if (i < input.Length)       fg = input[i] == target[i] ? "#4CAF50" : "#F44336";
             else if (i == input.Length) fg = "#FFFFFF";
-            list.Add(new FormattedChar { Character = target[i].ToString(), Foreground = fg, IsCaret = i == input.Length });
+
+            list.Add(new FormattedChar
+            {
+                Character  = target[i].ToString(),
+                Foreground = fg,
+                IsCaret    = i == input.Length
+            });
         }
+
         if (input.Length > target.Length)
             for (int i = target.Length; i < input.Length; i++)
-                list.Add(new FormattedChar { Character = input[i].ToString(), Foreground = "#FF9800", IsCaret = i == input.Length - 1 });
+                list.Add(new FormattedChar
+                {
+                    Character  = input[i].ToString(),
+                    Foreground = "#FF9800",
+                    IsCaret    = i == input.Length - 1
+                });
 
         FormattedText = new ObservableCollection<FormattedChar>(list);
     }
 
+    // ── Input helpers ────────────────────────────────────────────────────────
     public void HandleCharacter(string text)
     {
         if (!_typingEngine.IsRunning) return;
         _typingEngine.RegisterKeystroke();
+        _soundService?.Play();
         CurrentInput += text[0];
     }
 
     public void HandleBackspace()
     {
         if (!_typingEngine.IsRunning || _currentInput.Length == 0) return;
+        _soundService?.Play();
         CurrentInput = _currentInput[..^1];
     }
 
+    // ── Helpers ──────────────────────────────────────────────────────────────
     private static string RoundName(int index) => index switch
     {
         0 => "Easy", 1 => "Medium", 2 => "Hard", _ => "Unknown"
     };
 
-    public string RoundDisplay     { get => _roundDisplay;     set { _roundDisplay     = value; OnPropertyChanged(); } }
-    public int    AttemptsLeft     { get => _attemptsLeft;     set { _attemptsLeft     = value; OnPropertyChanged(); } }
-    public double Wpm              { get => _wpm;              set { _wpm              = value; OnPropertyChanged(); } }
-    public double Accuracy         { get => _accuracy;         set { _accuracy         = value; OnPropertyChanged(); } }
-    public int    RemainingSeconds { get => _remainingSeconds; set { _remainingSeconds = value; OnPropertyChanged(); } }
+    private void NotifyCountdownProperties()
+    {
+        OnPropertyChanged(nameof(IsCountingDown));
+        OnPropertyChanged(nameof(CountdownValue));
+        OnPropertyChanged(nameof(CountdownLabel));
+        OnPropertyChanged(nameof(CountdownOverlayVisible));
+    }
+
+    // ── Bindable properties ──────────────────────────────────────────────────
+    public string RoundDisplay
+    {
+        get => _roundDisplay;
+        set { _roundDisplay = value; OnPropertyChanged(); }
+    }
+
+    public int AttemptsLeft
+    {
+        get => _attemptsLeft;
+        set { _attemptsLeft = value; OnPropertyChanged(); }
+    }
+
+    public double Wpm
+    {
+        get => _wpm;
+        set { _wpm = value; OnPropertyChanged(); }
+    }
+
+    public double Accuracy
+    {
+        get => _accuracy;
+        set { _accuracy = value; OnPropertyChanged(); }
+    }
+
+    public int RemainingSeconds
+    {
+        get => _remainingSeconds;
+        set { _remainingSeconds = value; OnPropertyChanged(); }
+    }
+
+    public bool IsCountingDown
+    {
+        get => _isCountingDown;
+        set { _isCountingDown = value; NotifyCountdownProperties(); }
+    }
+
+    public int CountdownValue
+    {
+        get => _countdownValue;
+        set { _countdownValue = value; OnPropertyChanged(); }
+    }
+
+    public string CountdownLabel          => _isCountingDown ? "GET READY" : "SEC";
+    public bool   CountdownOverlayVisible => _isCountingDown;
 
     public ObservableCollection<FormattedChar> FormattedText
     {
