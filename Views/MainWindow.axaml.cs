@@ -161,6 +161,11 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             HandleBackspace();
             e.Handled = true;
         }
+        else if (e.Key == Key.Enter)
+        {
+            SubRoundFinished();
+            e.Handled = true;
+        }
     }
 
     // ── Round loading ────────────────────────────────────────────────────────

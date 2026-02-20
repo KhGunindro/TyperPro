@@ -30,10 +30,9 @@
 
         <Style Selector="TextBlock.statLabel">
             <Setter Property="FontSize" Value="9"/>
-            <Setter Property="Foreground" Value="#3A3A4A"/>
+            <Setter Property="Foreground" Value="#606080"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="LetterSpacing" Value="3"/>
-            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
         </Style>
 
         <Style Selector="TextBlock.statValue">
@@ -154,9 +153,8 @@
                                        Foreground="#F0F0F0" HorizontalAlignment="Center"
                                        FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
                             <TextBlock Text="{Binding CountdownLabel}"
-                                       FontSize="7" Foreground="#2A3A2A"
-                                       HorizontalAlignment="Center" LetterSpacing="1"
-                                       FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
+                                       FontSize="7" Foreground="#4A6A4A"
+                                       HorizontalAlignment="Center" LetterSpacing="1"/>
                         </StackPanel>
                     </Border>
                 </Panel>
@@ -278,10 +276,9 @@
 
                     <TextBlock Grid.Row="1"
                                Text="· click here and start typing ·"
-                               FontSize="9" Foreground="#14141E"
+                               FontSize="9" Foreground="#2A2A3A"
                                HorizontalAlignment="Center" Margin="0 18 0 0"
-                               LetterSpacing="3"
-                               FontFamily="Courier New, Courier, monospace"/>
+                               LetterSpacing="3"/>
                 </Grid>
             </Border>
 
@@ -289,8 +286,7 @@
                 <StackPanel Grid.Column="0" Orientation="Horizontal"
                             VerticalAlignment="Center" Spacing="6">
                     <TextBlock Text="EASY" FontSize="8" LetterSpacing="2"
-                               Foreground="#3A3A50" VerticalAlignment="Center"
-                               FontFamily="Courier New"/>
+                               Foreground="#505068" VerticalAlignment="Center"/>
                     <Border Width="7" Height="7" CornerRadius="4">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
@@ -304,16 +300,14 @@
                     <Border Width="1" Height="12" Background="#1A1A28"
                             VerticalAlignment="Center" Margin="4 0"/>
                     <TextBlock Text="MED" FontSize="8" LetterSpacing="2"
-                               Foreground="#1E1E2E" VerticalAlignment="Center"
-                               FontFamily="Courier New"/>
+                               Foreground="#303048" VerticalAlignment="Center"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="1" Height="12" Background="#1A1A28"
                             VerticalAlignment="Center" Margin="4 0"/>
                     <TextBlock Text="HARD" FontSize="8" LetterSpacing="2"
-                               Foreground="#1E1E2E" VerticalAlignment="Center"
-                               FontFamily="Courier New"/>
+                               Foreground="#303048" VerticalAlignment="Center"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
@@ -338,10 +332,9 @@
             </Border.Background>
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
                 <TextBlock Text="GET  READY"
-                           FontSize="11" FontWeight="Bold" Foreground="#1E2E1E"
+                           FontSize="11" FontWeight="Bold" Foreground="#3A5A3A"
                            HorizontalAlignment="Center" LetterSpacing="10"
-                           Margin="0 0 0 6"
-                           FontFamily="Courier New, Courier, monospace"/>
+                           Margin="0 0 0 6"/>
                 <TextBlock Text="{Binding CountdownValue}"
                            FontSize="130" FontWeight="Bold"
                            HorizontalAlignment="Center"
@@ -366,10 +359,9 @@
                     </Border.Background>
                 </Border>
                 <TextBlock Text="60  SECOND  ROUND"
-                           FontSize="9" Foreground="#1A2A1A"
+                           FontSize="9" Foreground="#3A5A3A"
                            HorizontalAlignment="Center" LetterSpacing="6"
-                           Margin="0 12 0 0"
-                           FontFamily="Courier New, Courier, monospace"/>
+                           Margin="0 12 0 0"/>
             </StackPanel>
         </Border>
 

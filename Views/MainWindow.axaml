@@ -43,10 +43,15 @@
         <ContentControl x:Name="PageHost" Grid.Row="0"/>
         <Border Grid.Row="1" Background="#080808" BorderBrush="#111111" BorderThickness="0 1 0 0">
             <Grid ColumnDefinitions="*,Auto,*" Margin="32 0">
-                <StackPanel Grid.Column="0" Orientation="Horizontal"
-                            VerticalAlignment="Center" Spacing="10" Height="38">
-                    <Border Width="6" Height="6" CornerRadius="3"
-                            Background="#4CAF50" VerticalAlignment="Center">
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            Spacing="10"
+                            Height="38">
+                    <Border Width="6" Height="6"
+                            CornerRadius="3"
+                            Background="#4CAF50"
+                            VerticalAlignment="Center">
                         <Border.Styles>
                             <Style Selector="Border">
                                 <Style.Animations>
@@ -59,22 +64,33 @@
                             </Style>
                         </Border.Styles>
                     </Border>
-                    <TextBlock Text="NIELIT IMPHAL" FontSize="10" FontWeight="Bold"
-                               Foreground="#3A3A3A" LetterSpacing="3" VerticalAlignment="Center"/>
+                    <TextBlock Text="NIELIT IMPHAL"
+                               FontSize="10" FontWeight="Bold"
+                               Foreground="#666666" LetterSpacing="3"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal"
-                            VerticalAlignment="Center" Spacing="6" Height="38">
-                    <TextBlock Text="developed by" FontSize="9"
-                               Foreground="#222222" VerticalAlignment="Center"/>
-                    <TextBlock Text="KhGunindro" FontSize="9" FontWeight="Bold"
-                               Foreground="#4CAF50" VerticalAlignment="Center" Opacity="0.7"/>
-                </StackPanel>
-                <StackPanel Grid.Column="2" Orientation="Horizontal"
-                            HorizontalAlignment="Right" VerticalAlignment="Center"
+
+                <StackPanel Grid.Column="1"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center"
                             Spacing="6" Height="38">
-                    <TextBlock Text="©" FontSize="9" Foreground="#222222" VerticalAlignment="Center"/>
+                    <TextBlock Text="developed by" FontSize="9"
+                               Foreground="#444444" VerticalAlignment="Center"/>
+                    <TextBlock Text="KhGunindro" FontSize="9" FontWeight="Bold"
+                               Foreground="#4CAF50" VerticalAlignment="Center"
+                               Opacity="0.9"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Spacing="6" Height="38">
+                    <TextBlock Text="©" FontSize="9"
+                               Foreground="#444444" VerticalAlignment="Center"/>
                     <TextBlock Text="2026" FontSize="9" FontWeight="Bold"
-                               Foreground="#2A2A2A" VerticalAlignment="Center" LetterSpacing="2"/>
+                               Foreground="#555555" VerticalAlignment="Center"
+                               LetterSpacing="2"/>
                 </StackPanel>
             </Grid>
         </Border>
