@@ -1,14 +1,12 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="TyperPro.Views.MainWindow"
-        Width="960"
-        Height="640"
-        MinWidth="900"
+        Width="960" Height="640" MinWidth="900"
         Background="#0A0A0A"
         Title="TyperPro"
         Focusable="True"
-        Loaded="OnLoaded"
-        PointerPressed="OnPointerPressed">
+        FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"
+        Icon="/Assets/Favicon_200x200.png">
 
     <Window.Styles>
         <Style Selector="Border.cursor">
@@ -25,7 +23,6 @@
                 </Animation>
             </Style.Animations>
         </Style>
-
         <Style Selector="Button">
             <Setter Property="Background" Value="#2E7D32"/>
             <Setter Property="Foreground" Value="White"/>
@@ -43,28 +40,13 @@
     </Window.Styles>
 
     <Grid RowDefinitions="*,Auto">
-
-        <!-- Page content swapped by code-behind -->
         <ContentControl x:Name="PageHost" Grid.Row="0"/>
-
-        <!-- ══ Modern Footer ══════════════════════════════════════════════════ -->
-        <Border Grid.Row="1"
-                Background="#080808"
-                BorderBrush="#111111"
-                BorderThickness="0 1 0 0">
+        <Border Grid.Row="1" Background="#080808" BorderBrush="#111111" BorderThickness="0 1 0 0">
             <Grid ColumnDefinitions="*,Auto,*" Margin="32 0">
-
-                <!-- Left: dot + institute -->
-                <StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="10"
-                            Height="38">
-                    <!-- Green status dot -->
-                    <Border Width="6" Height="6"
-                            CornerRadius="3"
-                            Background="#4CAF50"
-                            VerticalAlignment="Center">
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            VerticalAlignment="Center" Spacing="10" Height="38">
+                    <Border Width="6" Height="6" CornerRadius="3"
+                            Background="#4CAF50" VerticalAlignment="Center">
                         <Border.Styles>
                             <Style Selector="Border">
                                 <Style.Animations>
@@ -77,59 +59,24 @@
                             </Style>
                         </Border.Styles>
                     </Border>
-                    <TextBlock Text="NIELIT IMPHAL"
-                               FontSize="10"
-                               FontWeight="Bold"
-                               Foreground="#3A3A3A"
-                               LetterSpacing="3"
-                               VerticalAlignment="Center"
-                               FontFamily="Courier New, Courier, monospace"/>
+                    <TextBlock Text="NIELIT IMPHAL" FontSize="10" FontWeight="Bold"
+                               Foreground="#3A3A3A" LetterSpacing="3" VerticalAlignment="Center"/>
                 </StackPanel>
-
-                <!-- Centre: developed by line -->
-                <StackPanel Grid.Column="1"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="6"
-                            Height="38">
-                    <TextBlock Text="developed by"
-                               FontSize="9"
-                               Foreground="#222222"
-                               VerticalAlignment="Center"
-                               FontFamily="Courier New, Courier, monospace"/>
-                    <TextBlock Text="KhGunindro"
-                               FontSize="9"
-                               FontWeight="Bold"
-                               Foreground="#4CAF50"
-                               VerticalAlignment="Center"
-                               FontFamily="Courier New, Courier, monospace"
-                               Opacity="0.7"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Spacing="6" Height="38">
+                    <TextBlock Text="developed by" FontSize="9"
+                               Foreground="#222222" VerticalAlignment="Center"/>
+                    <TextBlock Text="KhGunindro" FontSize="9" FontWeight="Bold"
+                               Foreground="#4CAF50" VerticalAlignment="Center" Opacity="0.7"/>
                 </StackPanel>
-
-                <!-- Right: year -->
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Spacing="6"
-                            Height="38">
-                    <TextBlock Text="©"
-                               FontSize="9"
-                               Foreground="#222222"
-                               VerticalAlignment="Center"
-                               FontFamily="Courier New, Courier, monospace"/>
-                    <TextBlock Text="2026"
-                               FontSize="9"
-                               FontWeight="Bold"
-                               Foreground="#2A2A2A"
-                               VerticalAlignment="Center"
-                               LetterSpacing="2"
-                               FontFamily="Courier New, Courier, monospace"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                            HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Spacing="6" Height="38">
+                    <TextBlock Text="©" FontSize="9" Foreground="#222222" VerticalAlignment="Center"/>
+                    <TextBlock Text="2026" FontSize="9" FontWeight="Bold"
+                               Foreground="#2A2A2A" VerticalAlignment="Center" LetterSpacing="2"/>
                 </StackPanel>
-
             </Grid>
         </Border>
-
     </Grid>
-
 </Window>

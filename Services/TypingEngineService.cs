@@ -7,7 +7,7 @@ public class TypingEngineService
     private string _targetText = string.Empty;
     private int _totalKeystrokes;
 
-    public const int TestDurationSeconds = 30;
+    public const int TestDurationSeconds = 60;
 
     public bool IsRunning => _stopwatch.IsRunning;
     public int ElapsedSeconds => (int)_stopwatch.Elapsed.TotalSeconds;

@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="TyperPro.Views.SummaryWindow"
         Title="TyperPro — Summary"
+        Icon="/Assets/Favicon_200x200.png"
         Width="1100" Height="720"
         MinWidth="900"
         WindowStartupLocation="CenterScreen"
@@ -26,7 +27,7 @@
             <Setter Property="FontSize" Value="32"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#E8E8E8"/>
-            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontFamily" Value="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
         </Style>
         <Style Selector="TextBlock.unit">
             <Setter Property="FontSize" Value="11"/>

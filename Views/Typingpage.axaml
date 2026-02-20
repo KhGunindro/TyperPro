@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="TyperPro.Views.TypingPage"
+             x:CompileBindings="False"
              FontFamily="Courier New, Courier, monospace">
 
     <UserControl.Background>
@@ -13,7 +14,6 @@
 
     <UserControl.Styles>
 
-        <!-- Blinking caret -->
         <Style Selector="Border.cursor">
             <Setter Property="Background" Value="#4ADE80"/>
             <Setter Property="Width" Value="2"/>
@@ -28,7 +28,6 @@
             </Style.Animations>
         </Style>
 
-        <!-- Stat label -->
         <Style Selector="TextBlock.statLabel">
             <Setter Property="FontSize" Value="9"/>
             <Setter Property="Foreground" Value="#3A3A4A"/>
@@ -37,15 +36,13 @@
             <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
         </Style>
 
-        <!-- Stat value -->
         <Style Selector="TextBlock.statValue">
             <Setter Property="FontSize" Value="26"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#F0F0F0"/>
-            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontFamily" Value="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
         </Style>
 
-        <!-- Primary button -->
         <Style Selector="Button.primary">
             <Setter Property="Foreground" Value="#020D02"/>
             <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
@@ -80,7 +77,6 @@
             <Setter Property="TextElement.Foreground" Value="#1A3A1A"/>
         </Style>
 
-        <!-- Ghost button -->
         <Style Selector="Button.ghost">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="#3A3A4A"/>
@@ -104,53 +100,33 @@
 
     </UserControl.Styles>
 
-    <!-- Root Panel: countdown overlay sits above everything -->
     <Panel>
 
-        <!-- ══════════════════════════════════════════════════════════════════
-             MAIN LAYOUT
-        ══════════════════════════════════════════════════════════════════════ -->
         <Grid RowDefinitions="Auto,*,Auto,Auto" Margin="52 28 52 0">
 
-            <!-- ── HEADER ──────────────────────────────────────────────────── -->
             <Grid Grid.Row="0" ColumnDefinitions="*,Auto,*" Margin="0 0 0 20">
 
-                <!-- Left: branding + round info -->
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="6">
-
-                    <!-- App wordmark with accent dot -->
                     <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
                         <TextBlock Text="TYPER"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Foreground="#4ADE80"
-                                   LetterSpacing="5"
+                                   FontSize="11" FontWeight="Bold"
+                                   Foreground="#4ADE80" LetterSpacing="5"
                                    FontFamily="Courier New, Courier, monospace"/>
                         <Border Width="4" Height="4" CornerRadius="2"
-                                Background="#4ADE80"
-                                VerticalAlignment="Center"/>
+                                Background="#4ADE80" VerticalAlignment="Center"/>
                         <TextBlock Text="PRO"
-                                   FontSize="11"
-                                   FontWeight="Bold"
-                                   Foreground="#2A6A40"
-                                   LetterSpacing="5"
+                                   FontSize="11" FontWeight="Bold"
+                                   Foreground="#2A6A40" LetterSpacing="5"
                                    FontFamily="Courier New, Courier, monospace"/>
                     </StackPanel>
-
                     <TextBlock Text="{Binding RoundDisplay}"
-                               FontSize="20"
-                               FontWeight="Bold"
+                               FontSize="20" FontWeight="Bold"
                                Foreground="#ECECEC"
                                FontFamily="Courier New, Courier, monospace"/>
                 </StackPanel>
 
-                <!-- Centre: glowing timer ring -->
                 <Panel Grid.Column="1" Width="84" Height="84" HorizontalAlignment="Center">
-
-                    <!-- Outer glow ring -->
-                    <Border CornerRadius="42"
-                            BorderThickness="1"
-                            Opacity="0.25">
+                    <Border CornerRadius="42" BorderThickness="1" Opacity="0.25">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                                 <GradientStop Color="#4ADE80" Offset="0"/>
@@ -158,13 +134,8 @@
                             </LinearGradientBrush>
                         </Border.BorderBrush>
                     </Border>
-
-                    <!-- Inner ring -->
-                    <Border Width="74" Height="74"
-                            CornerRadius="37"
-                            BorderThickness="2"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center">
+                    <Border Width="74" Height="74" CornerRadius="37" BorderThickness="2"
+                            HorizontalAlignment="Center" VerticalAlignment="Center">
                         <Border.BorderBrush>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                                 <GradientStop Color="#1A2E1A" Offset="0"/>
@@ -179,31 +150,21 @@
                         </Border.Background>
                         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                             <TextBlock Text="{Binding RemainingSeconds}"
-                                       FontSize="24"
-                                       FontWeight="Bold"
-                                       Foreground="#F0F0F0"
-                                       HorizontalAlignment="Center"
-                                       FontFamily="Courier New, Courier, monospace"/>
+                                       FontSize="24" FontWeight="Bold"
+                                       Foreground="#F0F0F0" HorizontalAlignment="Center"
+                                       FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
                             <TextBlock Text="{Binding CountdownLabel}"
-                                       FontSize="7"
-                                       Foreground="#2A3A2A"
-                                       HorizontalAlignment="Center"
-                                       LetterSpacing="1"
-                                       FontFamily="Courier New, Courier, monospace"/>
+                                       FontSize="7" Foreground="#2A3A2A"
+                                       HorizontalAlignment="Center" LetterSpacing="1"
+                                       FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
                         </StackPanel>
                     </Border>
                 </Panel>
 
-                <!-- Right: live stat cards -->
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Spacing="10">
+                <StackPanel Grid.Column="2" Orientation="Horizontal"
+                            HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="10">
 
-                    <!-- WPM card -->
-                    <Border Padding="16 10" CornerRadius="6"
-                            BorderThickness="1">
+                    <Border Padding="16 10" CornerRadius="6" BorderThickness="1">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                                 <GradientStop Color="#0C0C14" Offset="0"/>
@@ -224,9 +185,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- ACC card -->
-                    <Border Padding="16 10" CornerRadius="6"
-                            BorderThickness="1">
+                    <Border Padding="16 10" CornerRadius="6" BorderThickness="1">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                                 <GradientStop Color="#0C0C14" Offset="0"/>
@@ -245,18 +204,14 @@
                                 <TextBlock Classes="statValue"
                                            Text="{Binding Accuracy, StringFormat='{}{0:F0}'}"
                                            Foreground="#F0F0F0"/>
-                                <TextBlock FontSize="13"
-                                           Foreground="#3A3A4A"
-                                           VerticalAlignment="Bottom"
-                                           Margin="2 0 0 4"
+                                <TextBlock FontSize="13" Foreground="#3A3A4A"
+                                           VerticalAlignment="Bottom" Margin="2 0 0 4"
                                            FontFamily="Courier New">%</TextBlock>
                             </StackPanel>
                         </StackPanel>
                     </Border>
 
-                    <!-- RESETS card -->
-                    <Border Padding="16 10" CornerRadius="6"
-                            BorderThickness="1">
+                    <Border Padding="16 10" CornerRadius="6" BorderThickness="1">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
                                 <GradientStop Color="#0C0C14" Offset="0"/>
@@ -273,19 +228,14 @@
                             <TextBlock Classes="statLabel" Text="RESETS" HorizontalAlignment="Center"/>
                             <TextBlock Classes="statValue"
                                        Text="{Binding AttemptsLeft}"
-                                       Foreground="#F97316"
-                                       HorizontalAlignment="Center"/>
+                                       Foreground="#F97316" HorizontalAlignment="Center"/>
                         </StackPanel>
                     </Border>
 
                 </StackPanel>
             </Grid>
 
-            <!-- ── TYPING AREA ─────────────────────────────────────────────── -->
-            <Border Grid.Row="1"
-                    CornerRadius="8"
-                    BorderThickness="1"
-                    Padding="36 30">
+            <Border Grid.Row="1" CornerRadius="8" BorderThickness="1" Padding="36 30">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
                         <GradientStop Color="#07070E" Offset="0"/>
@@ -326,32 +276,20 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <!-- Hint text -->
                     <TextBlock Grid.Row="1"
                                Text="· click here and start typing ·"
-                               FontSize="9"
-                               Foreground="#14141E"
-                               HorizontalAlignment="Center"
-                               Margin="0 18 0 0"
+                               FontSize="9" Foreground="#14141E"
+                               HorizontalAlignment="Center" Margin="0 18 0 0"
                                LetterSpacing="3"
                                FontFamily="Courier New, Courier, monospace"/>
                 </Grid>
             </Border>
 
-            <!-- ── ACTION BAR ──────────────────────────────────────────────── -->
             <Grid Grid.Row="2" ColumnDefinitions="*,Auto" Margin="0 18 0 0">
-
-                <!-- Progress track: EASY · MED · HARD -->
-                <StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center"
-                            Spacing="6">
-
-                    <!-- EASY -->
-                    <TextBlock Text="EASY"
-                               FontSize="8" LetterSpacing="2"
-                               Foreground="#3A3A50"
-                               VerticalAlignment="Center"
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            VerticalAlignment="Center" Spacing="6">
+                    <TextBlock Text="EASY" FontSize="8" LetterSpacing="2"
+                               Foreground="#3A3A50" VerticalAlignment="Center"
                                FontFamily="Courier New"/>
                     <Border Width="7" Height="7" CornerRadius="4">
                         <Border.Background>
@@ -363,39 +301,24 @@
                     </Border>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
-
-                    <!-- Divider -->
-                    <Border Width="1" Height="12"
-                            Background="#1A1A28"
+                    <Border Width="1" Height="12" Background="#1A1A28"
                             VerticalAlignment="Center" Margin="4 0"/>
-
-                    <!-- MED -->
-                    <TextBlock Text="MED"
-                               FontSize="8" LetterSpacing="2"
-                               Foreground="#1E1E2E"
-                               VerticalAlignment="Center"
+                    <TextBlock Text="MED" FontSize="8" LetterSpacing="2"
+                               Foreground="#1E1E2E" VerticalAlignment="Center"
                                FontFamily="Courier New"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
-
-                    <!-- Divider -->
-                    <Border Width="1" Height="12"
-                            Background="#1A1A28"
+                    <Border Width="1" Height="12" Background="#1A1A28"
                             VerticalAlignment="Center" Margin="4 0"/>
-
-                    <!-- HARD -->
-                    <TextBlock Text="HARD"
-                               FontSize="8" LetterSpacing="2"
-                               Foreground="#1E1E2E"
-                               VerticalAlignment="Center"
+                    <TextBlock Text="HARD" FontSize="8" LetterSpacing="2"
+                               Foreground="#1E1E2E" VerticalAlignment="Center"
                                FontFamily="Courier New"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                     <Border Width="7" Height="7" CornerRadius="4" Background="#1A1A28"/>
                 </StackPanel>
 
-                <!-- Buttons -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
                     <Button Classes="ghost"   Content="RESET" Command="{Binding ResetCommand}"/>
                     <Button Classes="primary" Content="START" Command="{Binding StartCommand}"/>
@@ -403,10 +326,9 @@
             </Grid>
         </Grid>
 
-        <!-- ══════════════════════════════════════════════════════════════════
-             COUNTDOWN OVERLAY
-        ══════════════════════════════════════════════════════════════════════ -->
+        <!-- ── COUNTDOWN OVERLAY — IsHitTestVisible=False so it never blocks input ── -->
         <Border IsVisible="{Binding CountdownOverlayVisible}"
+                IsHitTestVisible="False"
                 CornerRadius="0">
             <Border.Background>
                 <LinearGradientBrush StartPoint="50%,0%" EndPoint="50%,100%">
@@ -414,27 +336,16 @@
                     <GradientStop Color="#F0050510" Offset="1"/>
                 </LinearGradientBrush>
             </Border.Background>
-
-            <StackPanel VerticalAlignment="Center"
-                        HorizontalAlignment="Center"
-                        Spacing="0">
-
-                <!-- "GET READY" label -->
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="0">
                 <TextBlock Text="GET  READY"
-                           FontSize="11"
-                           FontWeight="Bold"
-                           Foreground="#1E2E1E"
-                           HorizontalAlignment="Center"
-                           LetterSpacing="10"
+                           FontSize="11" FontWeight="Bold" Foreground="#1E2E1E"
+                           HorizontalAlignment="Center" LetterSpacing="10"
                            Margin="0 0 0 6"
                            FontFamily="Courier New, Courier, monospace"/>
-
-                <!-- Giant countdown digit -->
                 <TextBlock Text="{Binding CountdownValue}"
-                           FontSize="130"
-                           FontWeight="Bold"
+                           FontSize="130" FontWeight="Bold"
                            HorizontalAlignment="Center"
-                           FontFamily="Courier New, Courier, monospace"
+                           FontFamily="Cascadia Code, Consolas, Segoe UI Mono, monospace"
                            LineHeight="128">
                     <TextBlock.Foreground>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
@@ -444,11 +355,8 @@
                         </LinearGradientBrush>
                     </TextBlock.Foreground>
                 </TextBlock>
-
-                <!-- Accent bar under digit -->
                 <Border Height="2" Width="80" CornerRadius="1"
-                        HorizontalAlignment="Center"
-                        Margin="0 10 0 0">
+                        HorizontalAlignment="Center" Margin="0 10 0 0">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
                             <GradientStop Color="#00000000" Offset="0"/>
@@ -457,16 +365,11 @@
                         </LinearGradientBrush>
                     </Border.Background>
                 </Border>
-
-                <!-- "60 SEC ROUND" label -->
                 <TextBlock Text="60  SECOND  ROUND"
-                           FontSize="9"
-                           Foreground="#1A2A1A"
-                           HorizontalAlignment="Center"
-                           LetterSpacing="6"
+                           FontSize="9" Foreground="#1A2A1A"
+                           HorizontalAlignment="Center" LetterSpacing="6"
                            Margin="0 12 0 0"
                            FontFamily="Courier New, Courier, monospace"/>
-
             </StackPanel>
         </Border>
 

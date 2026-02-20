@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using TyperPro.Models;
 using TyperPro.Services;
 
@@ -17,9 +18,9 @@ namespace TyperPro.Views;
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
-    private readonly TypingEngineService  _typingEngine;
-    private readonly TypingSoundService?  _soundService;
-    private readonly string               _playerName;
+    private readonly TypingEngineService _typingEngine;
+    private TypingSoundService?          _soundService;
+    private string                       _playerName = string.Empty;
 
     private int _roundIndex    = 0;
     private int _subRoundIndex = 0;
@@ -37,6 +38,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     private DispatcherTimer? _roundTimer;
     private DispatcherTimer? _countdownTimer;
 
+    private readonly NameInputPage    _nameInputPage;
     private readonly TypingPage       _typingPage;
     private readonly ResultPage       _resultPage;
     private readonly RoundSummaryPage _roundSummaryPage;
@@ -44,7 +46,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public IRelayCommand StartCommand { get; }
     public IRelayCommand ResetCommand { get; }
 
-    // ── Backing fields ───────────────────────────────────────────────────────
     private string _roundDisplay     = string.Empty;
     private int    _attemptsLeft;
     private double _wpm;
@@ -57,44 +58,57 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     public new event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged([CallerMemberName] string? n = null)
         => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(n));
-
-    // ── Paragraphs ───────────────────────────────────────────────────────────
+    
     private static readonly string[][] Paragraphs =
     {
+        // --- EASY: Long, flowing narratives with simple vocabulary and standard rhythm ---
         new[] {
-            "The quick brown fox jumps over the lazy dog near the bank of the river. A quiet breeze rustles the leaves and carries the scent of fresh rain. It is a peaceful day in the countryside where animals roam free.",
-            "She sells seashells by the seashore and smiles at every passing sailor. The waves crash gently on the rocks as the sun sets behind the distant hills. A lone gull cries out and wheels away into the golden sky.",
-            "Tom walked slowly through the old park and watched the pigeons peck at crumbs. Children laughed on the swings while their parents sat on benches reading books. The smell of cut grass lingered pleasantly in the warm afternoon air."
+            "The old lighthouse stood tall on the jagged cliffs, watching over the cold blue sea for over a hundred years. Every night, the giant glass lens turned slowly, sending a bright beam of light far out into the dark waves to guide the ships safely home to the harbor. The keeper of the light was a kind man named Samuel, who spent his days painting the wooden stairs and cleaning the glass until it sparkled like a diamond in the sun. He lived a quiet life with his small dog and a garden full of red roses that grew against the white stone walls. Even when the great storms came and the wind howled around the tower, Samuel felt safe and warm inside his little kitchen with a cup of hot tea. He knew that his work was important to the sailors who were far from land, and he took great pride in making sure the light never went out, no matter how hard the rain fell or how loud the thunder rolled across the sky.",
+            "A winding river flowed through the center of the deep green valley, bringing life to the many animals that lived among the tall grass and shady trees. In the spring, the water was high and fast from the melting snow on the mountains, but by the middle of summer, it became a gentle stream where deer came to drink in the early morning light. A group of friends often brought their wooden canoe to the water’s edge, pushing off into the current to spend the whole day exploring the hidden bends and quiet pools of the river. They brought a basket filled with sandwiches, apples, and cold juice to eat under the shade of a large willow tree that dipped its long branches into the water. As the sun began to set, they would paddle back to their campsite, tired but happy, to build a small fire and roast marshmallows under a sky filled with thousands of bright stars.",
+            "Walking through the city park in the middle of autumn is like stepping into a painting filled with gold, red, and bright yellow leaves. The air is crisp and cool, making people wrap their scarves a little tighter as they walk along the stone paths that lead past the big fountain in the square. Squirrels run quickly across the grass, gathering nuts to hide for the long winter months ahead, while children jump into large piles of leaves that their parents have raked together. On the wooden benches, older couples sit together and talk quietly, enjoying the last bit of warmth from the afternoon sun before the evening chill sets in. There is a sense of change in the air, a feeling that the earth is getting ready to rest, and yet there is so much beauty in this final burst of color before the first white snowflakes begin to fall from the grey clouds above."
         },
+
+        // --- MEDIUM: Longer sentences, socio-technical themes, and mid-range punctuation ---
         new[] {
-            "In the world of technology, artificial intelligence continues to evolve at a rapid pace. Machine learning algorithms now drive cars, diagnose diseases, and compose music. While the future holds immense promise, we must also consider the ethical implications.",
-            "Climate change presents one of the most complex challenges humanity has ever faced. Scientists warn that without immediate action, rising temperatures will displace millions and disrupt food supplies globally. Collaboration between nations is no longer optional but urgent.",
-            "The global economy has become deeply interconnected through decades of trade agreements and digital communication. A disruption in one market can ripple across continents within hours. Understanding these dynamics is essential for navigating the modern financial landscape."
+            "The transition toward renewable energy sources represents a monumental shift in global infrastructure that requires both political will and massive private investment. While solar and wind power have become increasingly cost-effective over the last decade, the challenge of energy storage remains a significant hurdle for engineers to overcome. Without high-capacity battery systems or innovative grid management, the intermittent nature of these green technologies could lead to instability in the power supply during peak hours of consumption. Furthermore, the geopolitical landscape is being reshaped as nations scramble to secure the rare earth minerals necessary for manufacturing high-tech components. We must also consider the workforce transition, ensuring that those currently employed in the fossil fuel industry are provided with the education and resources needed to pivot into the emerging green economy. It is a race against time that demands cooperation on an international scale to mitigate the most severe effects of a changing climate.",
+            "Urban planning in the twenty-first century has evolved to prioritize the 'walkable city' model, which seeks to reduce our heavy reliance on personal automobiles in favor of public transit and cycling. By designing neighborhoods where essential services—such as grocery stores, schools, and healthcare facilities—are within a fifteen-minute walk, planners can significantly improve the quality of life for residents. This approach not only reduces traffic congestion and air pollution but also fosters a stronger sense of community as people interact more frequently in shared public spaces. However, implementing these changes in established metropolitan areas often faces resistance from those who fear the loss of parking or the gentrification of older districts. Successful transformation requires a delicate balance of architectural innovation, social equity, and transparent governance to ensure that the benefits of modernization are shared by all members of society, regardless of their income level.",
+            "The advent of the internet has fundamentally altered the way human beings process information, shifting our focus from deep, sustained reading to a more fragmented and rapid style of scanning content. Cognitive scientists are currently investigating how this constant exposure to hyperlinks and digital notifications affects our ability to concentrate on complex tasks for extended periods. While we now have access to the sum of human knowledge at our fingertips, there is a growing concern that our analytical skills may be eroding in favor of superficial understanding. This digital shift has also impacted the publishing industry, as traditional newspapers struggle to compete with the viral nature of social media algorithms that prioritize engagement over factual accuracy. To thrive in this new environment, individuals must practice 'digital mindfulness,' consciously choosing when to disconnect from the screen and engage in the slow, deliberate thought processes that lead to true wisdom and long-term memory retention."
         },
+
+        // --- HARD: Extreme length, dense scientific/philosophical jargon, and heavy punctuation ---
         new[] {
-            "The intricate dance of quantum mechanics reveals a universe far stranger than fiction. Particles exist in superposition, entangled across vast distances, defying classical logic. As physicists delve deeper into the subatomic realm, they uncover layers of reality that challenge perception.",
-            "Epistemological inquiry demands we question the very foundations upon which knowledge is constructed. Kant's transcendental idealism proposed that space and time are cognitive frameworks imposed by the mind. Such radical reconceptions continue to reverberate through contemporary philosophy.",
-            "The thermodynamic arrow of time — entropy's inexorable increase — distinguishes past from future in a universe whose fundamental laws are otherwise time-symmetric. This asymmetry, emerging from boundary conditions rather than dynamics, remains one of physics' most provocative open questions."
+            "The architectural paradigm of the 'panopticon'—as conceptualized by Jeremy Bentham and later critiqued by Michel Foucault—serves as a chilling metaphor for the ubiquitous surveillance state of the digital epoch. In this theoretical framework, the mere possibility of being observed functions as a mechanism of social control, compelling individuals to internalize the gaze of authority and regulate their own behavior accordingly. When transposed onto contemporary data-harvesting practices, this phenomenon manifests as the 'algorithmic panopticon,' where predictive analytics and biometric metadata coalesce to form a comprehensive profile of the private citizen. The ethical ramifications are staggering: if our preferences, movements, and even our subconscious biases are quantifiable, the traditional notion of 'free will' becomes a fragile abstraction. We find ourselves ensnared in a web of recursive feedback loops, where our past digital footprints dictate our future opportunities in a manner that is often opaque, unaccountable, and fundamentally antithetical to the principles of an open society.",
+            "Astrophysical observations regarding the accelerated expansion of the universe have necessitated the postulation of 'dark energy'—a hypothetical form of energy that permeates all of space and exerts a negative, repulsive pressure. This cosmological constant (represented by the Greek letter Lambda) remains the most widely accepted explanation within the Lambda-CDM model; however, the discrepancy between the observed vacuum energy density and the theoretical predictions of quantum field theory is often described as the 'worst theoretical prediction in the history of physics.' Scientists are currently utilizing massive subterranean detectors and space-based interferometers to probe the fundamental nature of this elusive force, hoping to discern whether it is a static property of space-time or a dynamic field (such as quintessence) that evolves over eons. The resolution of this enigma may require a radical synthesis of General Relativity and Quantum Mechanics—two frameworks that remain stubbornly incompatible at the Planck scale—potentially leading to a paradigm shift that redefines our comprehension of the 'Big Freeze' and the ultimate fate of the cosmos.",
+            "The ontological status of 'qualia'—the subjective, first-person experiences of sensory perception, such as the specific redness of a rose or the agonizing sting of a burn—represents the 'hard problem' of consciousness that continues to baffle neurophilosophers. Materialist reductionists posit that these experiences are merely epiphenomena of complex neural firing patterns within the cerebral cortex; yet, this fails to explain *why* such physical processes should be accompanied by an internal felt-sense at all. Frank Jackson’s famous 'Mary’s Room' thought experiment suggests that even if one possessed exhaustive physical knowledge of the world, the actual experience of color would provide a new, non-physical fact, thereby refuting strict physicalism. This leads some to explore panpsychism—the radical idea that consciousness is a fundamental, ubiquitous feature of the universe, akin to mass or charge—rather than an emergent property of biological evolution. Navigating this labyrinthine discourse requires a rigorous deconstruction of our most basic assumptions regarding the mind-body dualism that has haunted Western metaphysics since the Cartesian revolution."
         }
     };
 
-    // ── Constructor ──────────────────────────────────────────────────────────
-    public MainWindow(string playerName)
+    public MainWindow()
     {
-        _playerName   = playerName;
         _typingEngine = new TypingEngineService();
-
-        try   { _soundService = new TypingSoundService(); }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"[Audio] Sound disabled: {ex.Message}");
-            _soundService = null;
-        }
 
         StartCommand = new RelayCommand(StartSubRound, () => !_typingEngine.IsRunning && !_isCountingDown);
         ResetCommand = new RelayCommand(ResetSubRound, () => _typingEngine.IsRunning && _attemptsUsed < MaxAttemptsPerSubRound);
 
         InitializeComponent();
+
+        this.AddHandler(InputElement.TextInputEvent, OnWindowTextInput, RoutingStrategies.Tunnel);
+        this.AddHandler(InputElement.KeyDownEvent,   OnWindowKeyDown,   RoutingStrategies.Tunnel);
+        this.PointerPressed += (_, _) => Focus();
+
+        // Sound init
+        Task.Run(() =>
+        {
+            try   { _soundService = new TypingSoundService(); }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Audio] Sound disabled: {ex.Message}");
+                _soundService = null;
+            }
+        });
+
+        _nameInputPage = new NameInputPage();
+        _nameInputPage.OnNameSubmitted += OnNameSubmitted;
 
         _typingPage             = new TypingPage();
         _typingPage.DataContext = this;
@@ -107,24 +121,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         _roundSummaryPage.OnNextRound += GoToNextRound;
         _roundSummaryPage.OnFinish    += GoToSummary;
 
-        PageHost.Content = _typingPage;
+        // Start on name input page
+        PageHost.Content = _nameInputPage;
 
-        // TextInput handles ALL printable chars; KeyDown only for Backspace
-        this.AddHandler(InputElement.TextInputEvent, OnWindowTextInput, RoutingStrategies.Tunnel);
-        this.AddHandler(InputElement.KeyDownEvent,   OnWindowKeyDown,   RoutingStrategies.Tunnel);
+        Dispatcher.UIThread.Post(() =>
+        {
+            Focus();
+            _nameInputPage.FocusInput();
+        }, DispatcherPriority.Loaded);
+    }
 
+    private void OnNameSubmitted(string name)
+    {
+        _playerName          = name;
         _currentRoundSummary = new RoundSummary { RoundName = RoundName(_roundIndex) };
         LoadSubRound();
     }
 
-    // ── Window events ────────────────────────────────────────────────────────
-    private void OnLoaded(object? sender, RoutedEventArgs e)                 => this.Focus();
-    private void OnPointerPressed(object? sender, PointerPressedEventArgs e) => this.Focus();
-
     // ── Input handlers ───────────────────────────────────────────────────────
-
-    /// All printable characters (letters, digits, space, hyphen, underscore,
-    /// punctuation, etc.) arrive here correctly regardless of keyboard layout.
     private void OnWindowTextInput(object? sender, TextInputEventArgs e)
     {
         if (PageHost.Content != _typingPage) return;
@@ -137,7 +151,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         e.Handled = true;
     }
 
-    /// Only non-printable keys that never appear in TextInput need handling here.
     private void OnWindowKeyDown(object? sender, KeyEventArgs e)
     {
         if (PageHost.Content != _typingPage) return;
@@ -148,8 +161,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             HandleBackspace();
             e.Handled = true;
         }
-        // NOTE: Do NOT add Key.Space — it double-fires on some layouts.
-        //       Space arrives correctly through TextInputEvent.
     }
 
     // ── Round loading ────────────────────────────────────────────────────────
@@ -167,7 +178,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         RoundDisplay     = $"{RoundName(_roundIndex)}  ·  {_subRoundIndex + 1} / 3";
         AttemptsLeft     = MaxAttemptsPerSubRound;
         CountdownValue   = 5;
-        RemainingSeconds = TypingEngineService.TestDurationSeconds; // 60
+        RemainingSeconds = TypingEngineService.TestDurationSeconds;
 
         _typingEngine.SetTargetText(Paragraphs[_roundIndex][_subRoundIndex]);
         CurrentInput = string.Empty;
@@ -183,10 +194,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         NotifyCountdownProperties();
 
         PageHost.Content = _typingPage;
-        this.Focus();
+        Focus();
     }
 
-    // ── Start with 5-second countdown ────────────────────────────────────────
+    // ── Start with countdown ─────────────────────────────────────────────────
     private void StartSubRound()
     {
         if (_typingEngine.IsRunning || _isCountingDown) return;
@@ -199,7 +210,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
 
-        // Play the first tick immediately so "5" has a sound
         _soundService?.PlayCountdownTick();
 
         _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -216,12 +226,10 @@ public partial class MainWindow : Window, INotifyPropertyChanged
                 _isCountingDown = false;
                 NotifyCountdownProperties();
 
-                // "GO!" — brighter, longer tone signals round start
                 _soundService?.PlayCountdownGo();
 
-                // ── Begin the 60-second typing round ──
                 _typingEngine.Start();
-                RemainingSeconds = TypingEngineService.TestDurationSeconds; // 60
+                RemainingSeconds = TypingEngineService.TestDurationSeconds;
 
                 _roundTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
                 _roundTimer.Tick += (_, _) => UpdateStats();
@@ -229,16 +237,15 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
                 StartCommand.NotifyCanExecuteChanged();
                 ResetCommand.NotifyCanExecuteChanged();
-                this.Focus();
+                Focus();
             }
             else
             {
-                // Short tick for 4, 3, 2, 1
                 _soundService?.PlayCountdownTick();
             }
         };
         _countdownTimer.Start();
-        this.Focus();
+        Focus();
     }
 
     // ── Reset ────────────────────────────────────────────────────────────────
@@ -262,9 +269,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
-
-        _soundService?.Play();
-        this.Focus();
+        Focus();
     }
 
     // ── Sub-round finished ───────────────────────────────────────────────────
@@ -298,7 +303,12 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         };
 
         _currentRoundSummary.SubRounds.Add(result);
-        _ = DatabaseService.SaveRound(_playerName, result);
+
+        _ = Task.Run(async () =>
+        {
+            try   { await DatabaseService.SaveRound(_playerName, result); }
+            catch (Exception ex) { Console.WriteLine($"[DB] Save failed: {ex.Message}"); }
+        });
 
         bool isLastSubRound = _subRoundIndex == 2;
         bool isLastRound    = _roundIndex    == 2;
@@ -341,7 +351,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
 
     private void ForceFinish() => GoToSummary();
 
-    // ── Stats tick (every second during live round) ──────────────────────────
+    // ── Stats tick ───────────────────────────────────────────────────────────
     private void UpdateStats()
     {
         if (!_typingEngine.IsRunning) return;
@@ -358,7 +368,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (RemainingSeconds <= 0) SubRoundFinished();
     }
 
-    // ── Formatted text builder ───────────────────────────────────────────────
+    // ── Formatted text ───────────────────────────────────────────────────────
     private void UpdateFormattedText()
     {
         var target = _typingEngine.TargetText;
@@ -421,7 +431,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         OnPropertyChanged(nameof(CountdownOverlayVisible));
     }
 
-    // ── Bindable properties ──────────────────────────────────────────────────
+    // ── Properties ───────────────────────────────────────────────────────────
     public string RoundDisplay
     {
         get => _roundDisplay;

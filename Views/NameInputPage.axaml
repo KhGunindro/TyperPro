@@ -1,0 +1,101 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="TyperPro.Views.NameInputPage"
+             FontFamily="Courier New, Courier, monospace">
+
+    <UserControl.Background>
+        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+            <GradientStop Color="#0A0A0F" Offset="0"/>
+            <GradientStop Color="#0D0D12" Offset="0.5"/>
+            <GradientStop Color="#080810" Offset="1"/>
+        </LinearGradientBrush>
+    </UserControl.Background>
+
+    <UserControl.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#0C0C14"/>
+            <Setter Property="Foreground" Value="#F0F0F0"/>
+            <Setter Property="BorderBrush" Value="#1E1E2E"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="16 12"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="CaretBrush" Value="#4ADE80"/>
+        </Style>
+        <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#4ADE80"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Foreground" Value="#020D02"/>
+            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="48 14"/>
+            <Setter Property="CornerRadius" Value="3"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Color="#4ADE80" Offset="0"/>
+                        <GradientStop Color="#22C55E" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+        <StackPanel Grid.Row="0"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="0"
+                    Width="360">
+
+            <!-- Logo -->
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        HorizontalAlignment="Center" Margin="0 0 0 48">
+                <TextBlock Text="TYPER"
+                           FontSize="13" FontWeight="Bold"
+                           Foreground="#4ADE80" LetterSpacing="6"/>
+                <Border Width="5" Height="5" CornerRadius="3"
+                        Background="#4ADE80" VerticalAlignment="Center"/>
+                <TextBlock Text="PRO"
+                           FontSize="13" FontWeight="Bold"
+                           Foreground="#2A6A40" LetterSpacing="6"/>
+            </StackPanel>
+
+            <!-- Heading -->
+            <TextBlock Text="ENTER YOUR NAME"
+                       FontSize="10" FontWeight="Bold"
+                       Foreground="#3A3A4A" LetterSpacing="4"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 16"/>
+
+            <!-- TextBox -->
+            <TextBox x:Name="NameTextBox"
+                     Watermark="your name..."
+                     MaxLength="30"
+                     Margin="0 0 0 8"/>
+
+            <!-- Error -->
+            <TextBlock x:Name="ErrorText"
+                       Text="please enter a name"
+                       FontSize="9" Foreground="#F44336"
+                       LetterSpacing="2"
+                       HorizontalAlignment="Center"
+                       Margin="0 0 0 24"
+                       IsVisible="False"/>
+
+            <!-- Button -->
+            <Button x:Name="StartButton"
+                    Classes="primary"
+                    Content="START TYPING"
+                    HorizontalAlignment="Center"
+                    Margin="0 16 0 0"/>
+
+        </StackPanel>
+    </Grid>
+
+</UserControl>

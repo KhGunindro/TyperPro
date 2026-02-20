@@ -4,7 +4,11 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UseAppHost>false</UseAppHost>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+    <AvaloniaXamlIlMaxCallDepth>256</AvaloniaXamlIlMaxCallDepth>
     <LangVersion>latest</LangVersion>
+    <PackageIcon>Favicon_500x500.png</PackageIcon>
     <AvaloniaNameGeneratorIsEnabled>true</AvaloniaNameGeneratorIsEnabled>
   </PropertyGroup>
   <ItemGroup>
@@ -19,5 +23,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Assets\Fonts\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Views\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
