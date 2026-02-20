@@ -8,7 +8,7 @@
     <UserControl.Styles>
         <Style Selector="TextBlock.label">
             <Setter Property="FontSize" Value="10"/>
-            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Foreground" Value="#666666"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="LetterSpacing" Value="3"/>
         </Style>
@@ -16,11 +16,11 @@
             <Setter Property="FontSize" Value="28"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Foreground" Value="#E8E8E8"/>
-            <Setter Property="FontFamily" Value="Courier New, Courier, monospace"/>
+            <Setter Property="FontFamily" Value="Cascadia Code, Consolas, Segoe UI Mono, monospace"/>
         </Style>
         <Style Selector="TextBlock.unit">
             <Setter Property="FontSize" Value="10"/>
-            <Setter Property="Foreground" Value="#2A2A2A"/>
+            <Setter Property="Foreground" Value="#555555"/>
             <Setter Property="VerticalAlignment" Value="Bottom"/>
             <Setter Property="Margin" Value="3 0 0 5"/>
         </Style>

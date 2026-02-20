@@ -15,6 +15,9 @@ public partial class SummaryWindow : Window
 {
     private SummaryViewModel _vm = null!;
 
+    // ── FIX: Required by Avalonia XAML loader ────────────────────────────────
+    public SummaryWindow() : this(new List<RoundSummary>(), "Player") { }
+
     public SummaryWindow(List<RoundSummary> summaries, string playerName)
     {
         InitializeComponent();
