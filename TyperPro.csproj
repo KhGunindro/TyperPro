@@ -9,6 +9,7 @@
     <AvaloniaXamlIlMaxCallDepth>256</AvaloniaXamlIlMaxCallDepth>
     <LangVersion>latest</LangVersion>
     <PackageIcon>Favicon_500x500.png</PackageIcon>
+    <ApplicationIcon>Assets\Favicon.ico</ApplicationIcon>
     <AvaloniaNameGeneratorIsEnabled>true</AvaloniaNameGeneratorIsEnabled>
   </PropertyGroup>
   <ItemGroup>
@@ -28,5 +29,8 @@
     <Compile Update="Views\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\Favicon.ico" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 </Project>

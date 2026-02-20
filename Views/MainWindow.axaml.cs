@@ -186,7 +186,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         RemainingSeconds = TypingEngineService.TestDurationSeconds;
 
         _typingEngine.SetTargetText(Paragraphs[_roundIndex][_subRoundIndex]);
-        CurrentInput = string.Empty;
+        _currentInput = string.Empty;
 
         _wpmPoints.Clear();
         _rawWpmPoints.Clear();
@@ -197,6 +197,8 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
         NotifyCountdownProperties();
+
+        RebuildFormattedText(); 
 
         PageHost.Content = _typingPage;
         Focus();
@@ -282,7 +284,16 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         _roundTimer?.Stop();
         _roundTimer = null;
-        _typingEngine.Stop();
+
+        // ── Capture stats BEFORE stopping the engine ──
+        double wpm      = _typingEngine.CalculateWpm(_currentInput);
+        double rawWpm   = _typingEngine.CalculateRawWpm();
+        double accuracy = _typingEngine.CalculateAccuracy(_currentInput);
+
+        _typingEngine.Stop(); // stop AFTER capturing
+
+        Wpm      = wpm;
+        Accuracy = accuracy;
 
         StartCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
@@ -291,13 +302,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         {
             RoundName      = RoundName(_roundIndex),
             SubRoundIndex  = _subRoundIndex,
-            Wpm            = Wpm,
-            Accuracy       = Accuracy,
-            RawWpm         = _typingEngine.CalculateRawWpm(),
+            Wpm            = wpm,
+            Accuracy       = accuracy,
+            RawWpm         = rawWpm,
             CorrectChars   = _typingEngine.CountCorrectChars(_currentInput),
             IncorrectChars = _currentInput.TakeWhile((c, i) =>
-                                 i < _typingEngine.TargetText.Length &&
-                                 c != _typingEngine.TargetText[i]).Count(),
+                i < _typingEngine.TargetText.Length &&
+                c != _typingEngine.TargetText[i]).Count(),
             MissedChars    = Math.Max(0, _typingEngine.TargetText.Length - _currentInput.Length),
             ExtraChars     = Math.Max(0, _currentInput.Length - _typingEngine.TargetText.Length),
             Consistency    = 100,
@@ -378,6 +389,56 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     {
         var target = _typingEngine.TargetText;
         var input  = _currentInput;
+
+        if (_formattedText.Count != target.Length + Math.Max(0, input.Length - target.Length))
+        {
+            RebuildFormattedText();
+            return;
+        }
+
+        for (int i = 0; i < target.Length; i++)
+        {
+            string fg = "#808080";
+            if (i < input.Length)       fg = input[i] == target[i] ? "#4CAF50" : "#F44336";
+            else if (i == input.Length) fg = "#FFFFFF";
+
+            bool isCaret = i == input.Length;
+
+            var fc = _formattedText[i];
+            if (fc.Foreground != fg)      fc.Foreground = fg;
+            if (fc.IsCaret    != isCaret) fc.IsCaret    = isCaret;
+        }
+
+        int extraStart = target.Length;
+        int extraEnd   = input.Length;
+
+        while (_formattedText.Count > Math.Max(target.Length, extraEnd))
+            _formattedText.RemoveAt(_formattedText.Count - 1);
+
+        for (int i = extraStart; i < extraEnd; i++)
+        {
+            if (i < _formattedText.Count)
+            {
+                _formattedText[i].Character  = input[i].ToString();
+                _formattedText[i].Foreground = "#FF9800";
+                _formattedText[i].IsCaret    = i == input.Length - 1;
+            }
+            else
+            {
+                _formattedText.Add(new FormattedChar
+                {
+                    Character  = input[i].ToString(),
+                    Foreground = "#FF9800",
+                    IsCaret    = i == input.Length - 1
+                });
+            }
+        }
+    }
+    
+    private void RebuildFormattedText()
+    {
+        var target = _typingEngine.TargetText;
+        var input  = _currentInput;
         var list   = new List<FormattedChar>();
 
         for (int i = 0; i < target.Length; i++)
@@ -412,14 +473,28 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (!_typingEngine.IsRunning) return;
         _typingEngine.RegisterKeystroke();
         _soundService?.Play();
-        CurrentInput += text[0];
+        _currentInput += text[0];
+        UpdateFormattedText();
+        if (_typingEngine.IsRunning)
+        {
+            Wpm      = _typingEngine.CalculateWpm(_currentInput);
+            Accuracy = _typingEngine.CalculateAccuracy(_currentInput);
+        }
+        OnPropertyChanged(nameof(CurrentInput));
     }
 
     public void HandleBackspace()
     {
         if (!_typingEngine.IsRunning || _currentInput.Length == 0) return;
         _soundService?.Play();
-        CurrentInput = _currentInput[..^1];
+        _currentInput = _currentInput[..^1];
+        UpdateFormattedText();
+        if (_typingEngine.IsRunning)
+        {
+            Wpm      = _typingEngine.CalculateWpm(_currentInput);
+            Accuracy = _typingEngine.CalculateAccuracy(_currentInput);
+        }
+        OnPropertyChanged(nameof(CurrentInput));
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -494,12 +569,6 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         set
         {
             _currentInput = value;
-            UpdateFormattedText();
-            if (_typingEngine.IsRunning)
-            {
-                Wpm      = _typingEngine.CalculateWpm(_currentInput);
-                Accuracy = _typingEngine.CalculateAccuracy(_currentInput);
-            }
             OnPropertyChanged();
         }
     }
